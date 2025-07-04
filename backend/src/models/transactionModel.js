@@ -23,7 +23,7 @@ const TransactionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["SUCCESS", "FAILED"],
+      enum: ["SUCCESS", "FAILED", "PENDING"],
       default: "PENDING",
     },
     message: {
@@ -39,6 +39,6 @@ TransactionSchema.pre("save", async (next) => {
   // if (!this.isModified("message")) return;
 });
 
-const TransactionModel = mongoose.model("user", TransactionSchema);
+const TransactionModel = mongoose.model("transaction", TransactionSchema);
 
 module.exports = TransactionModel;

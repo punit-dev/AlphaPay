@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+const { hashPass } = require("../util/hash");
 
 const UserSchema = new mongoose.Schema(
   {
-    upi_id: {
+    upiId: {
       type: String,
       unique: true,
       trim: true,
@@ -19,6 +20,11 @@ const UserSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    password: {
+      type: String,
+      minlength: [8, "Password minimum 8"],
+      required: true,
+    },
     email: {
       type: String,
       required: true,
@@ -29,7 +35,7 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    phone_number: {
+    phoneNumber: {
       type: String,
       required: true,
       unique: true,
@@ -40,15 +46,15 @@ const UserSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
-    wallet_balance: {
+    walletBalance: {
       type: Number,
       default: 0,
     },
-    UPI_Pin: {
+    upiPin: {
       type: String,
       required: true,
     },
-    date_of_birth: {
+    dateOfBirth: {
       type: Date,
       required: true,
     },
@@ -61,10 +67,15 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.pre("save", async (next) => {
-  if (!this.upi_id && this.phone_number && this.isVerifiedPhoneNumber) {
-    this.upi_id = `${this.phone_number}@alphapay`;
+  if (!this.upi_id && this.username) {
+    this.upi_id = `${this.username}@alphapay`;
   }
-  // if (!this.isModified("UPI_Pin")) return;
+  if (this.isModified("upiPin")) {
+    this.upiPin = await hashPass(this.upiPin, 10);
+  }
+  if (this.isModified("password")) {
+    this.password = await hashPass(this.password, 10);
+  }
   next();
 });
 

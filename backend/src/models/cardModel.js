@@ -10,7 +10,7 @@ const CardSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-  },
+  }, //must encrypt
   expire_date: {
     type: Date,
     required: true,
@@ -31,6 +31,6 @@ CardSchema.pre("save", async (next) => {
   // if (!this.isModified("card_number")) return;
 });
 
-const CardModel = mongoose.model("user", CardSchema);
+const CardModel = mongoose.model("card", CardSchema);
 
 module.exports = CardModel;
