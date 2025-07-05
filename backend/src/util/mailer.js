@@ -17,7 +17,6 @@ const sendOTP = async (to, text) => {
     subject: "Email verification OTP",
     text: text,
   });
-  console.log("Message sent: ", info.messageId);
 };
 
 module.exports = sendOTP;

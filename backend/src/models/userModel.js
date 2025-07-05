@@ -33,6 +33,7 @@ const UserSchema = new mongoose.Schema(
     },
     isVerifiedEmail: {
       type: Boolean,
+      required: true,
       default: false,
     },
     phoneNumber: {
@@ -43,7 +44,6 @@ const UserSchema = new mongoose.Schema(
     },
     isVerifiedPhoneNumber: {
       type: Boolean,
-      required: true,
       default: false,
     },
     walletBalance: {
@@ -66,9 +66,10 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-UserSchema.pre("save", async (next) => {
-  if (!this.upi_id && this.username) {
-    this.upi_id = `${this.username}@alphapay`;
+UserSchema.pre("save", async function (next) {
+  if (!this.upiId && this.email) {
+    const name = this.email.split("@");
+    this.upiId = `${name[0]}@alphapay`;
   }
   if (this.isModified("upiPin")) {
     this.upiPin = await hashPass(this.upiPin, 10);
