@@ -141,4 +141,12 @@ const login = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { sendOTP, verifyOTP, register, login };
+const logout = asyncHandler(async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  });
+  return res.status(200).json({ message: "Log out successfully" });
+});
+
+module.exports = { sendOTP, verifyOTP, register, login, logout };
