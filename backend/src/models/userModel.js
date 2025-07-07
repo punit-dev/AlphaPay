@@ -67,9 +67,9 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.pre("save", async function (next) {
-  if (!this.upiId && this.email) {
-    const name = this.email.split("@");
-    this.upiId = `${name[0]}@alphapay`;
+  if (!this.upiId && this.username) {
+    const username = this.username;
+    this.upiId = `${username}@alphapay`;
   }
   if (this.isModified("upiPin")) {
     this.upiPin = await hashPass(this.upiPin, 10);
