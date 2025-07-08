@@ -9,5 +9,6 @@ route.put("/update", authMiddleware, UserController.updateUser);
 route.put("/updatePass", authMiddleware, UserController.updatePass);
 route.put("/updatePin", authMiddleware, UserController.updateUpiPin);
 route.delete("/delete", authMiddleware, UserController.deleteUser);
+route.get("/search", authMiddleware, UserController.search);
 
 module.exports = route;

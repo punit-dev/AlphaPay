@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 
 const TransactionSchema = new mongoose.Schema(
   {
-    from: {
+    payer: {
       type: mongoose.Types.ObjectId,
       required: true,
       ref: "user",
     },
-    to: {
+    payee: {
       type: mongoose.Types.ObjectId,
       required: true,
       ref: "user",
@@ -15,10 +15,11 @@ const TransactionSchema = new mongoose.Schema(
     amount: {
       type: Number,
       default: 0,
+      require: true,
     },
     method: {
       type: String,
-      enum: ["UPI_ID", "wallet", "card"],
+      enum: ["UPI_ID", "card"],
       required: true,
     },
     status: {

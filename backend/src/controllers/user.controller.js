@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const { comparePass } = require("../util/hash");
+const UserModel = require("../models/userModel");
+const TransactionModel = require("../models/transactionModel");
 
 const userProfile = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -46,7 +48,7 @@ const updatePass = asyncHandler(async (req, res) => {
     throw new Error("New password is required.");
   }
 
-  if (comparePass(user.password, newPass)) {
+  if (await comparePass(user.password, newPass)) {
     res.status(400);
     throw new Error("This password is already set.");
   }
@@ -59,30 +61,61 @@ const updatePass = asyncHandler(async (req, res) => {
 
 const updateUpiPin = asyncHandler(async (req, res) => {
   const user = req.user;
-  const { newUpiPin } = req.body;
+  const { newPin } = req.body;
 
-  if (!newUpiPin) {
+  if (!newPin) {
     res.status(400);
     throw new Error("New UPI Pin is required");
   }
 
-  if (comparePass(user.upiPin, newUpiPin)) {
+  if (await comparePass(user.upiPin, newPin)) {
     res.status(400);
     throw new Error("This UPI Pin is already set.");
   }
 
-  user.upiPin = newUpiPin;
+  user.upiPin = newPin;
   return res.status(200).json({ message: "UPI Pin is successfully updated" });
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
   const user = req.user;
   await user.deleteOne();
+  await TransactionModel.deleteMany({
+    $or: [{ payee: user._id }, { payer: user._id }],
+  });
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   });
   return res.status(200).json({ message: "User Deleted Successfully" });
+});
+
+const search = asyncHandler(async (req, res) => {
+  const { query } = req.query;
+  console.log(query);
+
+  if (!query) {
+    res.status(400);
+    throw new Error("Search query is required.");
+  }
+
+  const users = await UserModel.find({
+    $or: [
+      {
+        upiId: { $regex: query, $options: "i" },
+      },
+      {
+        phoneNumber: { $regex: query, $options: "i" },
+      },
+    ],
+  }).select("-password -upiPin -__v");
+
+  if (!users.length) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  return res.status(200).json({ users });
 });
 
 module.exports = {
@@ -91,4 +124,5 @@ module.exports = {
   deleteUser,
   updatePass,
   updateUpiPin,
+  search,
 };
