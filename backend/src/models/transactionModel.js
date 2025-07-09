@@ -8,9 +8,18 @@ const TransactionSchema = new mongoose.Schema(
       ref: "user",
     },
     payee: {
-      type: mongoose.Types.ObjectId,
-      required: true,
-      ref: "user",
+      name: String,
+      type: {
+        type: String,
+        enum: ["user", "bill", "recharge"],
+        required: true,
+      },
+      userRef: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        default: null,
+      },
+      accountOrPhone: String,
     },
     amount: {
       type: Number,
