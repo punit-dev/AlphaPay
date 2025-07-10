@@ -6,10 +6,9 @@ const CardSchema = new mongoose.Schema({
     required: true,
     ref: "user",
   },
-  card_number: {
+  cardNumber: {
     type: String,
     required: true,
-    unique: true,
   }, //must encrypt
   expire_date: {
     type: Date,

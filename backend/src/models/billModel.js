@@ -6,26 +6,36 @@ const BillSchema = new mongoose.Schema({
     required: true,
     ref: "user",
   },
-  billerName: {
+  provider: {
     type: String,
     required: true,
     trim: true,
   },
-  amount: {
-    type: Number,
+  UIdType: {
+    type: String,
+    required: true,
+    enum: ["accountNumber", "mobileNumber", "email"],
+  },
+  UId: {
+    type: String,
     required: true,
   },
   dueDate: {
     type: Date,
   },
-  status: {
-    type: String,
-    default: "PENDING",
-    enum: ["PAID", "PENDING"],
-  },
   category: {
     type: String,
-    enum: ["Mobile", "Electricity", "Broadband", "Water"],
+    enum: [
+      "MobileReacher",
+      "BroadbandReacher",
+      "DTH/CableTVReacher",
+      "GooglePayTopUp",
+    ],
+  },
+  nickname: {
+    type: String,
+    trim: true,
+    default: null,
   },
 });
 

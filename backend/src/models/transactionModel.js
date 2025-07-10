@@ -11,12 +11,17 @@ const TransactionSchema = new mongoose.Schema(
       name: String,
       type: {
         type: String,
-        enum: ["user", "bill", "recharge"],
+        enum: ["user", "bill"],
         required: true,
       },
       userRef: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
+        default: null,
+      },
+      billRef: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "bill",
         default: null,
       },
       accountOrPhone: String,
@@ -27,9 +32,16 @@ const TransactionSchema = new mongoose.Schema(
       require: true,
     },
     method: {
-      type: String,
-      enum: ["UPI_ID", "card"],
-      required: true,
+      type: {
+        type: String,
+        enum: ["wallet", "card"],
+        required: true,
+      },
+      cardRef: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "card",
+        default: null,
+      },
     },
     status: {
       type: String,

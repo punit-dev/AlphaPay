@@ -9,6 +9,11 @@ route.post(
   authMiddleware,
   TranController.newUserToUserTransaction
 );
+route.post(
+  "/userToBill",
+  authMiddleware,
+  TranController.newUserToBillTransaction
+);
 route.get("/allTransaction", authMiddleware, TranController.getTransaction);
 
 module.exports = route;

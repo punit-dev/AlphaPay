@@ -10,6 +10,10 @@ const errorHandler = require("./middleware/errorHandler");
 const authRoute = require("./routes/auth.route");
 const userRoute = require("./routes/user.route");
 const tranRoute = require("./routes/transaction.route");
+const billRoute = require("./routes/bill.route");
+const cors = require("cors");
+
+// app.use(cors());
 
 app.use(cookieParser());
 app.use(express.json());
@@ -17,7 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
-app.use("/transaction", tranRoute);
+app.use("/transactions", tranRoute);
+app.use("/bills", billRoute);
 
 app.use(errorHandler);
 
