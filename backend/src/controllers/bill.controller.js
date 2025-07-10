@@ -38,9 +38,9 @@ const getBills = asyncHandler(async (req, res) => {
     updatedAt: -1,
   });
 
-  if (!bills) {
-    res.status(400);
-    throw new Error("bills not found");
+  if (bills.length == 0) {
+    res.status(404);
+    throw new Error("bills not available");
   }
 
   return res.status(200).json({ message: "All Bills", bills });

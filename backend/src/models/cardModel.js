@@ -9,12 +9,16 @@ const CardSchema = new mongoose.Schema({
   cardNumber: {
     type: String,
     required: true,
-  }, //must encrypt
-  expire_date: {
+  },
+  CVV: {
+    type: String,
+    require: true,
+  },
+  expiryDate: {
     type: Date,
     required: true,
   },
-  card_holder: {
+  cardHolder: {
     type: String,
     required: true,
     trim: true,
@@ -24,10 +28,6 @@ const CardSchema = new mongoose.Schema({
     required: true,
     enum: ["Visa", "Mastercard", "RuPay"],
   },
-});
-
-CardSchema.pre("save", async (next) => {
-  // if (!this.isModified("card_number")) return;
 });
 
 const CardModel = mongoose.model("card", CardSchema);

@@ -2,6 +2,8 @@ const asyncHandler = require("express-async-handler");
 const { comparePass } = require("../util/hash");
 const UserModel = require("../models/userModel");
 const TransactionModel = require("../models/transactionModel");
+const CardModel = require("../models/cardModel");
+const BillModel = require("../models/billModel");
 
 const userProfile = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -79,10 +81,16 @@ const updateUpiPin = asyncHandler(async (req, res) => {
 
 const deleteUser = asyncHandler(async (req, res) => {
   const user = req.user;
-  await user.deleteOne();
-  await TransactionModel.deleteMany({
-    $or: [{ payee: user._id }, { payer: user._id }],
-  });
+  await Promise.all([
+    user.deleteOne(),
+    TransactionModel.deleteMany({
+      $or: [{ payee: user._id }, { payer: user._id }],
+    }),
+    CardModel.deleteMany({
+      userID: user._id,
+    }),
+    BillModel.deleteMany({ userID: user._id }),
+  ]);
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

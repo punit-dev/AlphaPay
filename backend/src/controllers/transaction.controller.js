@@ -81,7 +81,9 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
     message: message || "Paid",
   });
 
-  user.walletBalance -= amount;
+  if (method == "wallet") {
+    user.walletBalance -= amount;
+  }
   isPayee.walletBalance += amount;
 
   await Promise.all([user.save(), isPayee.save()]);
@@ -123,7 +125,8 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
   }
 
   const isCard = await CardModel.findOne({
-    $and: [{ userID: user._id }, { cardNumber: cardNumber }],
+    userID: user._id,
+    cardHash: hashedNumber,
   });
   if (method == "card") {
     if (!isCard) {
