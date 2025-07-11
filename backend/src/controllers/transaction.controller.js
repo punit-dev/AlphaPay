@@ -126,7 +126,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
 
   const isCard = await CardModel.findOne({
     userID: user._id,
-    cardHash: hashedNumber,
+    cardNumber: cardNumber,
   });
   if (method == "card") {
     if (!isCard) {
