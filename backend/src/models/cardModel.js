@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const encrypt = require("mongoose-encryption");
 
 const CardSchema = new mongoose.Schema({
   userID: {
@@ -28,6 +29,15 @@ const CardSchema = new mongoose.Schema({
     required: true,
     enum: ["Visa", "Mastercard", "RuPay"],
   },
+});
+
+const encKey = process.env.ENCRYPTION_KEY;
+const sigKey = process.env.SIG_KEY;
+
+CardSchema.plugin(encrypt, {
+  encryptionKey: encKey,
+  signingKey: sigKey,
+  encryptedFields: ["cardNumber", "CVV", "expiryDate"],
 });
 
 const CardModel = mongoose.model("card", CardSchema);

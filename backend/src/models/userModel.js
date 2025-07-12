@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { hashPass } = require("../util/hash");
+const encrypt = require("mongoose-encryption");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -78,6 +79,15 @@ UserSchema.pre("save", async function (next) {
     this.password = await hashPass(this.password, 10);
   }
   next();
+});
+
+const encKey = process.env.ENCRYPTION_KEY;
+const sigKey = process.env.SIG_KEY;
+
+UserSchema.plugin(encrypt, {
+  encryptionKey: encKey,
+  signingKey: sigKey,
+  encryptedFields: ["password", "phoneNumber", "upiPin", "dateOfBirth"],
 });
 
 const UserModel = mongoose.model("user", UserSchema);

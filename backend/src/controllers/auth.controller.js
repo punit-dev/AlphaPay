@@ -87,6 +87,8 @@ const register = asyncHandler(async (req, res) => {
     throw new Error("User already exist");
   }
 
+  const walletBalance = Math.floor(Math.random() * 10000);
+
   const newUser = await UserModel.create({
     username,
     fullname,
@@ -95,6 +97,7 @@ const register = asyncHandler(async (req, res) => {
     phoneNumber,
     upiPin,
     dateOfBirth,
+    walletBalance,
     isVerifiedEmail: true,
   });
 

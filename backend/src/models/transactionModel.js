@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const encrypt = require("mongoose-encryption");
 
 const TransactionSchema = new mongoose.Schema(
   {
@@ -57,8 +58,13 @@ const TransactionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-TransactionSchema.pre("save", async (next) => {
-  // if (!this.isModified("message")) return;
+const encKey = process.env.ENCRYPTION_KEY;
+const sigKey = process.env.SIG_KEY;
+
+TransactionSchema.plugin(encrypt, {
+  encryptionKey: encKey,
+  signingKey: sigKey,
+  encryptedFields: ["message"],
 });
 
 const TransactionModel = mongoose.model("transaction", TransactionSchema);
