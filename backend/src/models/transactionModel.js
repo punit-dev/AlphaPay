@@ -12,7 +12,7 @@ const TransactionSchema = new mongoose.Schema(
       name: String,
       type: {
         type: String,
-        enum: ["user", "bill"],
+        enum: ["user", "bill", "wallet"],
         required: true,
       },
       userRef: {

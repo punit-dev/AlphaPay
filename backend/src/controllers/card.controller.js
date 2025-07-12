@@ -49,13 +49,9 @@ const getCards = asyncHandler(async (req, res) => {
 });
 
 const deleteCard = asyncHandler(async (req, res) => {
-  const user = req.user;
   const { query } = req.query;
 
-  const card = await CardModel.findOneAndDelete({
-    userID: user._id,
-    _id: query,
-  });
+  const card = await CardModel.findByIdAndDelete(query);
   if (!card) {
     res.status(404);
     throw new Error("Card not found.");

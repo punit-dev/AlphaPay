@@ -14,6 +14,12 @@ route.post(
   authMiddleware,
   TranController.newUserToBillTransaction
 );
+route.post("/addBalance", authMiddleware, TranController.addMoneyToWallet);
+route.get(
+  "/verifyTransaction",
+  authMiddleware,
+  TranController.verifyTransaction
+);
 route.get("/allTransaction", authMiddleware, TranController.getTransaction);
 
 module.exports = route;
