@@ -5,8 +5,11 @@ const CardModel = require("../models/cardModel");
 
 const asyncHandler = require("express-async-handler");
 const { comparePass } = require("../util/hash");
+const checkValidation = require("../util/checkValidation");
 
 const newUserToUserTransaction = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const user = req.user;
   const { payee, amount, pin, method, message, cardID } = req.body;
 
@@ -97,6 +100,8 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
 });
 
 const newUserToBillTransaction = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const user = req.user;
   const { id, method, pin, cardID, amount, validity } = req.body;
 
@@ -188,7 +193,9 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
     .json({ message: "Bill paid successfully", transaction: successTran });
 });
 
-const addMoneyToWallet = asyncHandler(async (req, res) => {
+const walletRecharge = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const user = req.user;
   const { amount, cardID, upiPin } = req.body;
 
@@ -293,7 +300,7 @@ const getTransaction = asyncHandler(async (req, res) => {
 module.exports = {
   newUserToUserTransaction,
   newUserToBillTransaction,
-  addMoneyToWallet,
+  walletRecharge,
   verifyTransaction,
   getTransaction,
 };

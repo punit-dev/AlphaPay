@@ -4,8 +4,11 @@ const generateOTP = require("../util/generateOTP");
 const mailer = require("../util/mailer");
 const { createToken, verifyToken } = require("../util/token");
 const { comparePass } = require("../util/hash");
+const checkValidation = require("../util/checkValidation");
 
 const sendOTP = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const userEmail = req.body.email;
   if (!userEmail) {
     res.status(400);
@@ -27,6 +30,8 @@ const sendOTP = asyncHandler(async (req, res) => {
 });
 
 const verifyOTP = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const { otp } = req.body;
 
   if (!otp) {
@@ -55,6 +60,8 @@ const verifyOTP = asyncHandler(async (req, res) => {
 });
 
 const register = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const {
     username,
     fullname,
@@ -112,6 +119,8 @@ const register = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const { data, password } = req.body;
 
   const isUser = await UserModel.findOne({

@@ -1,8 +1,11 @@
 const CardModel = require("../models/cardModel");
 
 const asyncHandler = require("express-async-handler");
+const checkValidation = require("../util/checkValidation");
 
 const registerCard = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const user = req.user;
   const { cardNumber, CVV, expiryDate, cardHolder, type } = req.body;
 
@@ -49,6 +52,8 @@ const getCards = asyncHandler(async (req, res) => {
 });
 
 const deleteCard = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const { query } = req.query;
 
   const card = await CardModel.findByIdAndDelete(query);

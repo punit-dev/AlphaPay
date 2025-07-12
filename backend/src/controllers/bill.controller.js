@@ -1,8 +1,11 @@
 const BillModel = require("../models/billModel");
 
 const asyncHandler = require("express-async-handler");
+const checkValidation = require("../util/checkValidation");
 
 const registerBill = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const user = req.user;
   const { provider, UIdType, UId, category, nickname } = req.body;
 
@@ -47,6 +50,8 @@ const getBills = asyncHandler(async (req, res) => {
 });
 
 const updateBill = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const user = req.user;
   const { provider, UId, nickname } = req.body;
   const { query } = req.query;
@@ -75,6 +80,8 @@ const updateBill = asyncHandler(async (req, res) => {
 });
 
 const deleteBill = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const user = req.user;
   const { query } = req.query;
   const bill = await BillModel.findOneAndDelete({

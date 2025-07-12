@@ -4,6 +4,7 @@ const UserModel = require("../models/userModel");
 const TransactionModel = require("../models/transactionModel");
 const CardModel = require("../models/cardModel");
 const BillModel = require("../models/billModel");
+const checkValidation = require("../util/checkValidation");
 
 const userProfile = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -17,6 +18,8 @@ const userProfile = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const user = req.user;
   const { username, fullname, email, dateOfBirth, phoneNumber } = req.body;
   if (username && username != user.username) {
@@ -42,6 +45,8 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 const updatePass = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const user = req.user;
   const { newPass } = req.body;
 
@@ -62,6 +67,8 @@ const updatePass = asyncHandler(async (req, res) => {
 });
 
 const updateUpiPin = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const user = req.user;
   const { newPin } = req.body;
 
@@ -99,8 +106,9 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 const search = asyncHandler(async (req, res) => {
+  checkValidation(req);
+
   const { query } = req.query;
-  console.log(query);
 
   if (!query) {
     res.status(400);
