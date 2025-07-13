@@ -12,9 +12,41 @@ const userRoute = require("./routes/user.route");
 const tranRoute = require("./routes/transaction.route");
 const billRoute = require("./routes/bill.route");
 const cardRoute = require("./routes/card.route");
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const hpp = require("hpp");
 const cors = require("cors");
 
-app.use(cors());
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  })
+);
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
+        styleSrc: ["'self'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:"],
+      },
+    },
+  })
+);
+app.use(mongoSanitize());
+app.use(xss());
+app.use(hpp());
+app.use(
+  cors({
+    origin: [],
+    credentials: true,
+  })
+);
 
 app.use(cookieParser());
 app.use(express.json());

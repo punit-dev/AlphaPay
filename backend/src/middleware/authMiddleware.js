@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 const UserModel = require("../models/userModel");
 
 const authMiddleware = asyncHandler(async (req, res, next) => {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
   let verify;
   try {

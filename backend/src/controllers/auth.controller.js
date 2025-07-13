@@ -113,9 +113,14 @@ const register = asyncHandler(async (req, res) => {
   delete filteredUser.password;
   delete filteredUser.upiPin;
 
+  const token = createToken({ userID: isUser._id });
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  });
   res
     .status(201)
-    .json({ message: "User created successfully", user: filteredUser });
+    .json({ message: "User created successfully", token, user: filteredUser });
 });
 
 const login = asyncHandler(async (req, res) => {
@@ -142,13 +147,15 @@ const login = asyncHandler(async (req, res) => {
   delete filteredUser.password;
   delete filteredUser.upiPin;
 
-  res.cookie("token", createToken({ userID: isUser._id }), {
+  const token = createToken({ userID: isUser._id });
+  res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   });
 
   return res.status(200).json({
     message: "User logged in successfully",
+    token,
     user: filteredUser,
   });
 });
