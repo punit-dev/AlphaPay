@@ -72,10 +72,6 @@ const register = asyncHandler(async (req, res) => {
     dateOfBirth,
   } = req.body;
 
-  const isUser = await UserModel.findOne({
-    $or: [{ username }, { email }, { phoneNumber }],
-  });
-
   if (
     !username ||
     !fullname ||
@@ -88,6 +84,10 @@ const register = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("All fields are required");
   }
+
+  const isUser = await UserModel.findOne({
+    $or: [{ username }, { email }],
+  });
 
   if (isUser) {
     res.status(400);
