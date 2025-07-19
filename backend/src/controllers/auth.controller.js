@@ -7,7 +7,12 @@ const { comparePass } = require("../util/hash");
 const checkValidation = require("../util/checkValidation");
 
 const sendOTP = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const userEmail = req.body.email;
   if (!userEmail) {
@@ -26,20 +31,29 @@ const sendOTP = asyncHandler(async (req, res) => {
 
   await mailer(userEmail, `this is you OTP: ${otp}`);
 
-  return res.status(200).json({ message: "OTP successfully sent" });
+  return res.status(200).json({
+    message: "OTP successfully sent",
+    token,
+    otp: `${process.env.NODE_ENV === "test" && otp}`,
+  });
 });
 
 const verifyOTP = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
 
-  const { otp } = req.body;
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
+
+  const { otp, token } = req.body;
 
   if (!otp) {
     res.status(400);
     throw new Error("otp is required.");
   }
 
-  const authToken = req.cookies.authToken;
+  const authToken = req.cookies.authToken || token;
 
   let verify;
   try {
@@ -60,7 +74,12 @@ const verifyOTP = asyncHandler(async (req, res) => {
 });
 
 const register = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const {
     username,
@@ -111,7 +130,12 @@ const register = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const { data, password } = req.body;
 

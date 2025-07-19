@@ -5,8 +5,7 @@ const checkValidation = (req) => {
   if (!result.isEmpty()) {
     const errors = result.array().map((err) => err.msg);
     const error = new Error(errors.join(", "));
-    error.statusCode = 400;
-    throw error;
+    return error;
   }
 };
 

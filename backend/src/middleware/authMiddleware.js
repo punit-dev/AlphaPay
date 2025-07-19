@@ -5,6 +5,11 @@ const UserModel = require("../models/userModel");
 const authMiddleware = asyncHandler(async (req, res, next) => {
   const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
+  if (!token) {
+    res.status(401);
+    throw new Error("Token is required");
+  }
+
   let verify;
   try {
     verify = verifyToken(token);

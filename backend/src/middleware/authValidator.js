@@ -1,5 +1,4 @@
 const { body } = require("express-validator");
-const UserModel = require("../models/userModel");
 
 exports.validateRegister = [
   body("username")
@@ -37,13 +36,5 @@ exports.validateOTP = [
 ];
 
 exports.validateEmail = [
-  body("email")
-    .isEmail()
-    .withMessage("A valid email is required")
-    .custom(async (value) => {
-      const existUser = UserModel.findOne({ email: value });
-      if (existUser) {
-        throw new Error("A user already exists with this email address");
-      }
-    }),
+  body("email").isEmail().withMessage("Valid email is required"),
 ];
