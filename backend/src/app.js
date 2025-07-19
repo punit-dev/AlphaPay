@@ -51,11 +51,11 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/auth", authRoute);
-app.use("/users", userRoute);
-app.use("/transactions", tranRoute);
-app.use("/bills", billRoute);
-app.use("/cards", cardRoute);
+app.use("/api/auth", authRoute);
+app.use("/api/users", userRoute);
+app.use("/api/transactions", tranRoute);
+app.use("/api/bills", billRoute);
+app.use("/api/cards", cardRoute);
 
 app.use(errorHandler);
 
