@@ -72,19 +72,6 @@ const register = asyncHandler(async (req, res) => {
     dateOfBirth,
   } = req.body;
 
-  if (
-    !username ||
-    !fullname ||
-    !password ||
-    !email ||
-    !phoneNumber ||
-    !upiPin ||
-    !dateOfBirth
-  ) {
-    res.status(400);
-    throw new Error("All fields are required");
-  }
-
   const isUser = await UserModel.findOne({
     $or: [{ username }, { email }],
   });
@@ -113,7 +100,7 @@ const register = asyncHandler(async (req, res) => {
   delete filteredUser.password;
   delete filteredUser.upiPin;
 
-  const token = createToken({ userID: isUser._id });
+  const token = createToken({ userID: newUser._id });
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

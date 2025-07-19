@@ -8,24 +8,10 @@ exports.validateRegister = [
     .isLength({ min: 5 })
     .withMessage("Username must be at least 5 characters"),
   body("fullname").notEmpty().withMessage("Fullname is required"),
-  body("email")
-    .isEmail()
-    .withMessage("Valid email is required")
-    .custom(async (value) => {
-      const existUser = UserModel.findOne({ email: value });
-      if (existUser) {
-        throw new Error("A user already exists with this email address");
-      }
-    }),
+  body("email").isEmail().withMessage("Valid email is required"),
   body("phoneNumber")
     .isMobilePhone("any")
-    .withMessage("Valid phone number is required")
-    .custom(async (value) => {
-      const existUser = UserModel.findOne({ phoneNumber: value });
-      if (existUser) {
-        throw new Error("A user already exists with this Phone number");
-      }
-    }),
+    .withMessage("Valid phone number is required"),
   body("password")
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters"),
