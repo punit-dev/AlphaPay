@@ -18,7 +18,12 @@ const userProfile = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const user = req.user;
   const { username, fullname, email, dateOfBirth, phoneNumber } = req.body;
@@ -45,15 +50,15 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 const updatePass = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const user = req.user;
   const { newPass } = req.body;
-
-  if (!newPass) {
-    res.status(400);
-    throw new Error("New password is required.");
-  }
 
   if (await comparePass(user.password, newPass)) {
     res.status(400);
@@ -67,15 +72,15 @@ const updatePass = asyncHandler(async (req, res) => {
 });
 
 const updateUpiPin = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const user = req.user;
   const { newPin } = req.body;
-
-  if (!newPin) {
-    res.status(400);
-    throw new Error("New UPI Pin is required");
-  }
 
   if (await comparePass(user.upiPin, newPin)) {
     res.status(400);
@@ -83,6 +88,7 @@ const updateUpiPin = asyncHandler(async (req, res) => {
   }
 
   user.upiPin = newPin;
+  await user.save();
   return res.status(200).json({ message: "UPI Pin is successfully updated" });
 });
 
@@ -106,14 +112,14 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 const search = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const { query } = req.query;
-
-  if (!query) {
-    res.status(400);
-    throw new Error("Search query is required.");
-  }
 
   const users = await UserModel.find({
     $or: [

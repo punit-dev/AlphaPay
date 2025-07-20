@@ -35,7 +35,7 @@ let OtpToken;
 describe("auth route testing", () => {
   it("should send otp to user mail", async () => {
     const res = await request(app)
-      .post("/api/api/auth/sendOtp")
+      .post("/api/auth/sendOtp")
       .send({ email: "wimobo3423@forexru.com" });
 
     expect(res.statusCode).toBe(200);

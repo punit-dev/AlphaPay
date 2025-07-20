@@ -64,7 +64,15 @@ const sigKey = process.env.SIG_KEY;
 TransactionSchema.plugin(encrypt, {
   encryptionKey: encKey,
   signingKey: sigKey,
-  encryptedFields: ["message"],
+  excludeFromEncryption: [
+    "_id",
+    "__v",
+    "createAt",
+    "updateAt",
+    "payee",
+    "payer",
+    "status",
+  ],
 });
 
 const TransactionModel = mongoose.model("transaction", TransactionSchema);
