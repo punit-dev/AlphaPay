@@ -5,7 +5,6 @@ const AuthController = require("../controllers/auth.controller");
 const authMiddleware = require("../middleware/authMiddleware");
 const authValidator = require("../middleware/authValidator");
 
-route.post("/sendOtp", authValidator.validateEmail, AuthController.sendOTP);
 route.post("/verifyOtp", authValidator.validateOTP, AuthController.verifyOTP);
 route.post(
   "/register",

@@ -6,38 +6,6 @@ const { createToken, verifyToken } = require("../util/token");
 const { comparePass } = require("../util/hash");
 const checkValidation = require("../util/checkValidation");
 
-const sendOTP = asyncHandler(async (req, res) => {
-  const isNotValid = checkValidation(req);
-
-  if (isNotValid) {
-    res.status(400);
-    throw isNotValid;
-  }
-
-  const userEmail = req.body.email;
-  if (!userEmail) {
-    res.status(400);
-    throw new Error("User email is required.");
-  }
-
-  const otp = generateOTP(6);
-
-  const token = createToken({ otp }, "10m");
-  res.cookie("authToken", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 10 * 60 * 1000,
-  });
-
-  await mailer(userEmail, `this is you OTP: ${otp}`);
-
-  return res.status(200).json({
-    message: "OTP successfully sent",
-    token,
-    otp: `${process.env.NODE_ENV === "test" && otp}`,
-  });
-});
-
 const verifyOTP = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -46,18 +14,17 @@ const verifyOTP = asyncHandler(async (req, res) => {
     throw isNotValid;
   }
 
-  const { otp, token } = req.body;
+  const { otp, email } = req.body;
 
-  if (!otp) {
-    res.status(400);
-    throw new Error("otp is required.");
+  const user = await UserModel.findOne({ email });
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
   }
-
-  const authToken = req.cookies.authToken || token;
 
   let verify;
   try {
-    verify = verifyToken(authToken);
+    verify = verifyToken(user.otpToken);
   } catch (err) {
     res.status(401);
     throw new Error("OTP expired or invalid. Please request a new one.");
@@ -69,7 +36,9 @@ const verifyOTP = asyncHandler(async (req, res) => {
       .json({ message: "OTP is invalid please try again." });
   }
 
-  res.clearCookie("authToken");
+  user.otpToken = null;
+  user.isVerifiedEmail = true;
+  await user.save();
   return res.status(200).json({ message: "OTP Successfully verified" });
 });
 
@@ -102,6 +71,9 @@ const register = asyncHandler(async (req, res) => {
 
   const walletBalance = Math.floor(Math.random() * 10000);
 
+  const otp = generateOTP(6);
+  const token = createToken({ otp }, "10m");
+
   const newUser = await UserModel.create({
     username,
     fullname,
@@ -111,22 +83,28 @@ const register = asyncHandler(async (req, res) => {
     upiPin,
     dateOfBirth,
     walletBalance,
-    isVerifiedEmail: true,
+    otpToken: token,
   });
+
+  await mailer(newUser.email, `this is you OTP: ${otp}`);
 
   const filteredUser = newUser.toObject();
   delete filteredUser.__v;
   delete filteredUser.password;
   delete filteredUser.upiPin;
+  delete filteredUser.otpToken;
 
-  const token = createToken({ userID: newUser._id });
-  res.cookie("token", token, {
+  const authToken = createToken({ userID: newUser._id });
+  res.cookie("token", authToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   });
-  res
-    .status(201)
-    .json({ message: "User created successfully", token, user: filteredUser });
+  res.status(201).json({
+    message: "User created successfully",
+    user: filteredUser,
+    authToken,
+    otp: `${process.env.NODE_ENV === "test" && otp}`,
+  });
 });
 
 const login = asyncHandler(async (req, res) => {
@@ -179,4 +157,4 @@ const logout = asyncHandler(async (req, res) => {
   return res.status(200).json({ message: "Log out successfully" });
 });
 
-module.exports = { sendOTP, verifyOTP, register, login, logout };
+module.exports = { verifyOTP, register, login, logout };

@@ -5,6 +5,9 @@ const TransactionModel = require("../models/transactionModel");
 const CardModel = require("../models/cardModel");
 const BillModel = require("../models/billModel");
 const checkValidation = require("../util/checkValidation");
+const generateOTP = require("../util/generateOTP");
+const { createToken } = require("../util/token");
+const mailer = require("../util/mailer");
 
 const userProfile = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -12,6 +15,7 @@ const userProfile = asyncHandler(async (req, res) => {
   delete filteredUser.password;
   delete filteredUser.__v;
   delete filteredUser.upiPin;
+  delete filteredUser.otpToken;
   return res
     .status(200)
     .json({ message: "User Profile Details", user: filteredUser });
@@ -35,6 +39,11 @@ const updateUser = asyncHandler(async (req, res) => {
   if (email && email != user.email) {
     user.email = email;
     user.isVerifiedEmail = false;
+
+    const otp = generateOTP(6);
+    const token = createToken({ otp }, "10m");
+    user.otpToken = token;
+    await mailer(email, `this is you OTP: ${otp}`);
   }
   if (dateOfBirth) user.dateOfBirth = dateOfBirth;
   if (phoneNumber && phoneNumber != user.phoneNumber) {
@@ -46,6 +55,7 @@ const updateUser = asyncHandler(async (req, res) => {
   delete filteredUser.password;
   delete filteredUser.__v;
   delete filteredUser.upiPin;
+  delete filteredUser.otpToken;
   return res.status(200).json({ message: "User Updated", user: filteredUser });
 });
 
