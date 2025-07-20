@@ -141,8 +141,8 @@ AlphaPay is a secure and modern UPI-based payment system that includes a wide ra
   - Response:
     ```json
     {
-      "message": "user created successfully",
-      "token": "login_token",
+      "message": "User created successfully",
+      "authToken": "Authentication_token",
       "user": "user_data_object"
     }
     ```
