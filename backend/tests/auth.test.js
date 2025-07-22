@@ -22,7 +22,7 @@ const testUser = {
   username: "example123",
   fullname: "Example Test",
   password: "123456789",
-  email: "wimobo3423@forexru.com",
+  email: "rafeg23079@modirosa.com",
   phoneNumber: "9832713485",
   upiPin: "123456",
   dateOfBirth: "2000-01-01",
@@ -30,33 +30,15 @@ const testUser = {
 
 let authToken;
 let otp;
-let OtpToken;
 
 describe("auth route testing", () => {
-  it("should send otp to user mail", async () => {
-    const res = await request(app)
-      .post("/api/auth/sendOtp")
-      .send({ email: "wimobo3423@forexru.com" });
-
-    expect(res.statusCode).toBe(200);
-    otp = res.body.otp;
-    OtpToken = res.body.token;
-  });
-
-  it("should otp verify", async () => {
-    const res = await request(app)
-      .post("/api/auth/verifyOtp")
-      .send({ otp: otp, token: OtpToken });
-
-    expect(res.statusCode).toBe(200);
-  });
-
   it("should user register", async () => {
     const res = await request(app).post("/api/auth/register").send(testUser);
 
     expect(res.statusCode).toBe(201);
+    otp = res.body.otp;
     const user = await UserModel.findOne({
-      email: "wimobo3423@forexru.com",
+      email: "rafeg23079@modirosa.com",
     });
 
     expect(user).toBeTruthy();
@@ -65,6 +47,14 @@ describe("auth route testing", () => {
     expect(user.upiId).toBe("example123@alphapay");
     expect(user.phoneNumber).toBe("9832713485");
     expect(user.dateOfBirth).toEqual(new Date("2000-01-01"));
+  });
+
+  it("should otp verify", async () => {
+    const res = await request(app)
+      .post("/api/auth/verifyOtp")
+      .send({ otp: otp, email: "rafeg23079@modirosa.com" });
+
+    expect(res.statusCode).toBe(200);
   });
 
   it("should user login", async () => {
@@ -90,35 +80,21 @@ describe("auth route testing", () => {
 });
 
 describe("auth route edge cases testing", () => {
-  //sendOtp edge case
-  it("should not send OTP without email", async () => {
-    const res = await request(app).post("/api/auth/sendOtp").send({});
-    expect(res.statusCode).toBe(400);
-    expect(res.body.message).toMatch("Valid email is required");
-  });
-  it("should not send OTP with invalid email format", async () => {
-    const res = await request(app)
-      .post("/api/auth/sendOtp")
-      .send({ email: "not-an-email" });
-    expect(res.statusCode).toBe(400);
-    expect(res.body.message).toMatch("Valid email is required");
-  });
-
   //verifyOtp edge case
   it("should not verify OTP without otp and token", async () => {
     const res = await request(app).post("/api/auth/verifyOtp").send({});
     expect(res.statusCode).toBe(400);
-    expect(res.body.message).toMatch("OTP is required, OTP must be valid");
+    expect(res.body.message).toMatch(
+      "OTP is required, OTP must be valid, Valid email is required"
+    );
   });
   it("should not verify with invalid OTP format", async () => {
     const res = await request(app)
       .post("/api/auth/verifyOtp")
-      .send({ otp: "abc123", token: "fakeToken" });
+      .send({ otp: "abc123", email: "fakeEmail" });
 
-    expect(res.statusCode).toBe(401);
-    expect(res.body.message).toMatch(
-      "OTP expired or invalid. Please request a new one."
-    );
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toMatch("Valid email is required");
   });
 
   //register user edge case

@@ -33,6 +33,7 @@ exports.validateOTP = [
     .withMessage("OTP is required")
     .isLength({ min: 6, max: 6 })
     .withMessage("OTP must be valid"),
+  body("email").isEmail().withMessage("Valid email is required")
 ];
 
 exports.validateEmail = [
