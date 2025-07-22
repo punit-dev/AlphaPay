@@ -153,8 +153,8 @@ describe("auth route edge cases testing", () => {
   });
   it("should reject login with wrong credentials", async () => {
     const res = await request(app).post("/api/auth/login").send({
-      data: "wronguser",
-      password: "wrongpass",
+      data: "wrongUser",
+      password: "wrongPass",
     });
 
     expect(res.statusCode).toBe(404);

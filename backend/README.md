@@ -97,7 +97,7 @@ AlphaPay is a secure and modern UPI-based payment system that includes a wide ra
 
      ```
      PORT=5000
-     MONGOURI=your_mongodb_uri
+     MONGO_URI=your_mongodb_uri
 
      JWT_SECRET=your_jwt_secret
 

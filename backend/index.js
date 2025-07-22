@@ -5,7 +5,7 @@ const connectDB = require("./src/config/db");
 
 const PORT = process.env.PORT;
 
-connectDB(process.env.MONGOURI).then(() => {
+connectDB(process.env.MONGO_URI).then(() => {
   server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });

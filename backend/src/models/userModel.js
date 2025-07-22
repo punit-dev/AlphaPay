@@ -4,6 +4,11 @@ const encrypt = require("mongoose-encryption");
 
 const UserSchema = new mongoose.Schema(
   {
+    isAdmin: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
     upiId: {
       type: String,
       unique: true,
