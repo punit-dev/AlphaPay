@@ -57,6 +57,14 @@ describe("auth route testing", () => {
     expect(res.statusCode).toBe(200);
   });
 
+  it("should user resend OTP", async () => {
+    const res = await request(app)
+      .post("/api/auth/resendOtp")
+      .send({ email: "rafeg23079@modirosa.com" });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toBe("OTP sent successfully");
+  });
+
   it("should user login", async () => {
     const res = await request(app).post("/api/auth/login").send({
       data: "example123",
@@ -141,6 +149,19 @@ describe("auth route edge cases testing", () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toMatch("User already exist");
+  });
+
+  it("should not resend OTP with missing fields", async () => {
+    const res = await request(app).post("/api/auth/resendOtp").send();
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Valid email is required");
+  });
+  it("should not resend OTP with wrong credential", async () => {
+    const res = await request(app).post("/api/auth/resendOtp").send({
+      email: "wrongEmail@mail.com",
+    });
+    expect(res.statusCode).toBe(404);
+    expect(res.body.message).toBe("User not found");
   });
 
   //login edge case

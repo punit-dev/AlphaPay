@@ -6,42 +6,6 @@ const { createToken, verifyToken } = require("../util/token");
 const { comparePass } = require("../util/hash");
 const checkValidation = require("../util/checkValidation");
 
-const verifyOTP = asyncHandler(async (req, res) => {
-  const isNotValid = checkValidation(req);
-
-  if (isNotValid) {
-    res.status(400);
-    throw isNotValid;
-  }
-
-  const { otp, email } = req.body;
-
-  const user = await UserModel.findOne({ email });
-  if (!user) {
-    res.status(404);
-    throw new Error("User not found");
-  }
-
-  let verify;
-  try {
-    verify = verifyToken(user.otpToken);
-  } catch (err) {
-    res.status(401);
-    throw new Error("OTP expired or invalid. Please request a new one.");
-  }
-
-  if (otp != verify.otp) {
-    return res
-      .status(401)
-      .json({ message: "OTP is invalid please try again." });
-  }
-
-  user.otpToken = null;
-  user.isVerifiedEmail = true;
-  await user.save();
-  return res.status(200).json({ message: "OTP Successfully verified" });
-});
-
 const register = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -107,6 +71,71 @@ const register = asyncHandler(async (req, res) => {
   });
 });
 
+const verifyOTP = asyncHandler(async (req, res) => {
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
+
+  const { otp, email } = req.body;
+
+  const user = await UserModel.findOne({ email });
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  let verify;
+  try {
+    verify = verifyToken(user.otpToken);
+  } catch (err) {
+    res.status(401);
+    throw new Error("OTP expired or invalid. Please request a new one.");
+  }
+
+  if (otp != verify.otp) {
+    return res
+      .status(401)
+      .json({ message: "OTP is invalid please try again." });
+  }
+
+  user.otpToken = null;
+  user.isVerifiedEmail = true;
+  await user.save();
+  return res.status(200).json({ message: "OTP Successfully verified" });
+});
+
+const resendOTP = asyncHandler(async (req, res) => {
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
+
+  const { email } = req.body;
+
+  const otp = generateOTP(6);
+  const token = createToken({ otp }, "10m");
+
+  const user = await UserModel.findOne({ email });
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  await mailer(email, `this is you OTP: ${otp}`);
+
+  user.otpToken = token;
+  await user.save();
+  return res.status(200).json({
+    message: "OTP sent successfully",
+    otp: `${process.env.NODE_ENV === "test" && otp}`,
+  });
+});
+
 const login = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -157,4 +186,4 @@ const logout = asyncHandler(async (req, res) => {
   return res.status(200).json({ message: "Log out successfully" });
 });
 
-module.exports = { verifyOTP, register, login, logout };
+module.exports = { register, verifyOTP, resendOTP, login, logout };
