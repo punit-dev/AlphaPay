@@ -183,7 +183,7 @@ const logout = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   });
-  return res.status(200).json({ message: "Log out successfully" });
+  return res.status(200).json({ message: "Logout successfully" });
 });
 
 module.exports = { register, verifyOTP, resendOTP, login, logout };

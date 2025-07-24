@@ -143,7 +143,60 @@ AlphaPay is a secure and modern UPI-based payment system that includes a wide ra
     {
       "message": "User created successfully",
       "authToken": "Authentication_token",
+      "user": "user_data_object",
+      "otp": false
+    }
+    ```
+- `POST /api/auth/verifyOtp`: Verify OTP.
+  - Request body:
+    ```json
+    {
+      "email": "user@example.com",
+      "otp": "verification_otp"
+    }
+    ```
+  - Response:
+    ```json
+    {
+      "message": "OTP Successfully verified"
+    }
+    ```
+- `POST /api/auth/resendOtp`: Resend the OTP.
+  - Request body:
+    ```json
+    {
+      "email": "user@example.com"
+    }
+    ```
+  - Response:
+    ```json
+    {
+      "message": "OTP sent successfully",
+      "otp": false
+    }
+    ```
+- `POST /api/auth/login`: Login user.
+
+  - Request body:
+    ```json
+    {
+      "data": "user@example.com/username",
+      "password": "user_password"
+    }
+    ```
+  - Response:
+    ```json
+    {
+      "message": "User logged in successfully",
+      "token": "Authorization_token",
       "user": "user_data_object"
     }
     ```
-- `POST /api/auth/login`: User login with email/username and password.
+
+- `POST /api/auth/logout`: Logout the user.
+  - Response:
+    ```json
+    {
+      "message": "Logout successfully"
+    }
+    ```

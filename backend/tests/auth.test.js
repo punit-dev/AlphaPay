@@ -83,7 +83,7 @@ describe("auth route testing", () => {
       .set("Authorization", `Bearer ${authToken}`);
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.message).toMatch("Log out successfully");
+    expect(res.body.message).toMatch("Logout successfully");
   });
 });
 
