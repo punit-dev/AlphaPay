@@ -8,7 +8,12 @@ const { comparePass } = require("../util/hash");
 const checkValidation = require("../util/checkValidation");
 
 const newUserToUserTransaction = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const user = req.user;
   const { payee, amount, pin, method, message, cardID } = req.body;
@@ -100,8 +105,12 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
 });
 
 const newUserToBillTransaction = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
 
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
   const user = req.user;
   const { id, method, pin, cardID, amount, validity } = req.body;
 
@@ -194,7 +203,12 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
 });
 
 const walletRecharge = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const user = req.user;
   const { amount, cardID, upiPin } = req.body;
@@ -264,7 +278,13 @@ const walletRecharge = asyncHandler(async (req, res) => {
 });
 
 const verifyTransaction = asyncHandler(async (req, res) => {
-  const user = req.user;
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
+
   const { query } = req.query;
 
   const transaction = await TransactionModel.findById(query);

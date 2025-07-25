@@ -22,7 +22,7 @@ const testUser = {
   username: "example123",
   fullname: "Example Test",
   password: "123456789",
-  email: "rafeg23079@modirosa.com",
+  email: "domojeb184@ikanteri.com",
   phoneNumber: "9832713485",
   upiPin: "123456",
   dateOfBirth: "2000-01-01",
@@ -38,7 +38,7 @@ describe("auth route testing", () => {
     expect(res.statusCode).toBe(201);
     otp = res.body.otp;
     const user = await UserModel.findOne({
-      email: "rafeg23079@modirosa.com",
+      email: "domojeb184@ikanteri.com",
     });
 
     expect(user).toBeTruthy();
@@ -52,7 +52,7 @@ describe("auth route testing", () => {
   it("should otp verify", async () => {
     const res = await request(app)
       .post("/api/auth/verifyOtp")
-      .send({ otp: otp, email: "rafeg23079@modirosa.com" });
+      .send({ otp: otp, email: "domojeb184@ikanteri.com" });
 
     expect(res.statusCode).toBe(200);
   });
@@ -60,7 +60,7 @@ describe("auth route testing", () => {
   it("should user resend OTP", async () => {
     const res = await request(app)
       .post("/api/auth/resendOtp")
-      .send({ email: "rafeg23079@modirosa.com" });
+      .send({ email: "domojeb184@ikanteri.com" });
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toBe("OTP sent successfully");
   });

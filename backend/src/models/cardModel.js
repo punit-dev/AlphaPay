@@ -16,7 +16,7 @@ const CardSchema = new mongoose.Schema({
     require: true,
   },
   expiryDate: {
-    type: Date,
+    type: String,
     required: true,
   },
   cardHolder: {
@@ -27,7 +27,7 @@ const CardSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ["Visa", "Mastercard", "RuPay"],
+    enum: ["credit", "debit"],
   },
 });
 

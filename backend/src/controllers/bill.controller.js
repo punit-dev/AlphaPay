@@ -4,7 +4,12 @@ const asyncHandler = require("express-async-handler");
 const checkValidation = require("../util/checkValidation");
 
 const registerBill = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const user = req.user;
   const { provider, UIdType, UId, category, nickname } = req.body;
@@ -50,7 +55,12 @@ const getBills = asyncHandler(async (req, res) => {
 });
 
 const updateBill = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const user = req.user;
   const { provider, UId, nickname } = req.body;
@@ -80,7 +90,12 @@ const updateBill = asyncHandler(async (req, res) => {
 });
 
 const deleteBill = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const user = req.user;
   const { query } = req.query;

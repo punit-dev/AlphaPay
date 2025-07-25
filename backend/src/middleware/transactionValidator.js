@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, query } = require("express-validator");
 
 const userToUserValidator = [
   body("payee").notEmpty().withMessage("Payee UPI ID is required"),
@@ -21,6 +21,10 @@ const userToBillValidator = [
     .withMessage("Validity must be a number greater than 0"),
 ];
 
+const verifyValidator = [
+  query("query").notEmpty().withMessage("Query is required"),
+];
+
 const walletRechargeValidator = [
   body("amount")
     .isFloat({ gt: 0 })
@@ -32,5 +36,6 @@ const walletRechargeValidator = [
 module.exports = {
   userToUserValidator,
   userToBillValidator,
+  verifyValidator,
   walletRechargeValidator,
 };

@@ -4,15 +4,15 @@ const asyncHandler = require("express-async-handler");
 const checkValidation = require("../util/checkValidation");
 
 const registerCard = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const user = req.user;
   const { cardNumber, CVV, expiryDate, cardHolder, type } = req.body;
-
-  if (!cardNumber || !CVV || !expiryDate || !cardHolder || !type) {
-    res.status(400);
-    throw new Error("All fields required.");
-  }
 
   const card = await CardModel.findOne({
     cardNumber,
@@ -52,7 +52,12 @@ const getCards = asyncHandler(async (req, res) => {
 });
 
 const deleteCard = asyncHandler(async (req, res) => {
-  checkValidation(req);
+  const isNotValid = checkValidation(req);
+
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
 
   const { query } = req.query;
 

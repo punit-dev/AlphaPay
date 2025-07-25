@@ -10,7 +10,7 @@ const testUser = {
   username: "example123",
   fullname: "Example Test",
   password: "123456789",
-  email: "rafeg23079@modirosa.com",
+  email: "domojeb184@ikanteri.com",
   phoneNumber: "9832713485",
   upiPin: "123456",
   dateOfBirth: "2000-01-01",
@@ -51,7 +51,7 @@ describe("user route testing", () => {
       res.body.user;
 
     expect(username).toBe("example123");
-    expect(email).toBe("rafeg23079@modirosa.com");
+    expect(email).toBe("domojeb184@ikanteri.com");
     expect(phoneNumber).toBe("9832713485");
     expect(fullname).toBe("Example Test");
     expect(new Date(dateOfBirth)).toEqual(new Date("2000-01-01"));
@@ -120,7 +120,7 @@ describe("user route testing", () => {
 
     expect(users[0].username).toBe("example123");
     expect(users[0].fullname).toBe("Example Test");
-    expect(users[0].email).toBe("rafeg23079@modirosa.com");
+    expect(users[0].email).toBe("domojeb184@ikanteri.com");
     expect(users[0].phoneNumber).toBe("9832713485");
   });
 });
