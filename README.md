@@ -8,8 +8,6 @@ AlphaPay is a secure UPI-based payment gateway system, inspired by real-world fi
 
 AlphaPay is a secure and modern UPI-based payment system that includes a wide range of core functionalities. The backend currently supports the following features:
 
----
-
 ### ✅ Completed Backend Features
 
 - **🔐 User Authentication**
