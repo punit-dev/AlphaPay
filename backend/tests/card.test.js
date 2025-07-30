@@ -18,6 +18,7 @@ const testUser = {
 };
 
 let authToken;
+let cardID;
 
 beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
@@ -34,6 +35,20 @@ beforeEach(async () => {
   });
 
   authToken = res.body.token;
+  const resp = await request(app)
+    .post("/api/cards/registerCard")
+    .send({
+      cardNumber: 1234567390128456,
+      CVV: 244,
+      expiryDate: "12/25",
+      cardHolder: "Example Test",
+      type: "debit",
+    })
+    .set({
+      authorization: `Bearer ${authToken}`,
+    });
+
+  cardID = resp.body.card._id;
 });
 
 afterAll(async () => {
@@ -66,4 +81,31 @@ describe("card route testing", () => {
     expect(cardDetails.expiryDate).toMatch("12/25");
     expect(cardDetails.type).toMatch("debit");
   });
+
+  it("should get all card", async () => {
+    const res = await request(app)
+      .get("/api/cards/getCards")
+      .set({
+        authorization: `Bearer ${authToken}`,
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.cards[0].cardNumber).toBe("1234567390128456");
+    expect(res.body.cards[0].CVV).toBe("244");
+    expect(res.body.cards[0].expiryDate).toBe("12/25");
+    expect(res.body.cards[0].type).toBe("debit");
+  });
+
+  it("should delete card", async () => {
+    const res = await request(app)
+      .delete(`/api/cards/deleteCard?query=${cardID}`)
+      .set({ authorization: `Bearer ${authToken}` });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toBe("Card deleted successfully");
+  });
 });
+
+// describe("card route edge case testing",()=>{
+
+// });

@@ -2,6 +2,7 @@ const CardModel = require("../models/cardModel");
 
 const asyncHandler = require("express-async-handler");
 const checkValidation = require("../util/checkValidation");
+const isDateExpired = require("../util/dateCheck");
 
 const registerCard = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
@@ -21,6 +22,11 @@ const registerCard = asyncHandler(async (req, res) => {
   if (card) {
     res.status(400);
     throw new Error("Card already saved.");
+  }
+
+  if (isDateExpired(expiryDate)) {
+    res.status(400);
+    throw new Error("This card is expired");
   }
 
   const newCard = await CardModel.create({
