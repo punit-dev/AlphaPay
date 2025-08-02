@@ -106,6 +106,89 @@ describe("card route testing", () => {
   });
 });
 
-// describe("card route edge case testing",()=>{
+describe("card route edge case testing", () => {
+  //register card edge case
+  it("should reject card registration with missing fields", async () => {
+    const res = await request(app)
+      .post("/api/cards/registerCard")
+      .send({})
+      .set({
+        authorization: `Bearer ${authToken}`,
+      });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toMatch(
+      "Card number must be exactly 16 digits, Card number must be numeric, CVV must be exactly 3 digits, CVV must be numeric, Expiry date is required, Expiry date must be in MM/YY format, Card holder name is too short, Card type must be either 'credit' or 'debit'"
+    );
+  });
+  it("should reject card registration with incorrect format", async () => {
+    const res = await request(app)
+      .post("/api/cards/registerCard")
+      .send({
+        cardNumber: 12345789023456,
+        CVV: "234",
+        expiryDate: "25/12",
+        cardHolder: "Example Test",
+        type: "debit",
+      })
+      .set({
+        authorization: `Bearer ${authToken}`,
+      });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toMatch(
+      "Card number must be exactly 16 digits, Expiry date must be in MM/YY format"
+    );
+  });
+  it("should reject card registration with expiryDate is expired", async () => {
+    const res = await request(app)
+      .post("/api/cards/registerCard")
+      .send({
+        cardNumber: 1234567890123456,
+        CVV: 234,
+        expiryDate: "12/22",
+        cardHolder: "Example Test",
+        type: "debit",
+      })
+      .set({
+        authorization: `Bearer ${authToken}`,
+      });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toMatch("This card is expired");
+  });
+  it("should reject card registration with required authorization token", async () => {
+    const res = await request(app).post("/api/cards/registerCard").send({
+      cardNumber: 12345789023456,
+      CVV: 234,
+      expiryDate: "12/25",
+      cardHolder: "Example Test",
+      type: "debit",
+    });
+    expect(res.statusCode).toBe(401);
+    expect(res.body.message).toMatch("Token is required");
+  });
 
-// });
+  //get cards edge case
+  it("should reject request with required authorization token", async () => {
+    const res = await request(app).get("/api/cards/getCards");
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.message).toBe("Token is required");
+  });
+
+  //delete card edge case
+  it("should reject to delete card with missing field", async () => {
+    const res = await request(app)
+      .delete(`/api/cards/deleteCard`)
+      .set({ authorization: `Bearer ${authToken}` });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Card ID query parameter is required");
+  });
+  it("should reject to delete card with required authorization token", async () => {
+    const res = await request(app).delete(
+      `/api/cards/deleteCard?query=${cardID}`
+    );
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.message).toBe("Token is required");
+  });
+});

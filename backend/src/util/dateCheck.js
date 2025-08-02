@@ -8,10 +8,12 @@ const isDateCurrent = (date) => {
 
   const givenYear = 2000 + parseInt(expiryYear, 10);
   const givenMonth = parseInt(expiryMonth, 10);
-
-  const isExpired = givenMonth === todayMonth && givenYear === todayYear;
-
-  return isExpired;
+  const isYearExpired = givenYear < todayYear;
+  if (isYearExpired) {
+    return isYearExpired;
+  }
+  const isDateExpired = givenMonth <= todayMonth;
+  return isDateExpired;
 };
 
 module.exports = isDateCurrent;
