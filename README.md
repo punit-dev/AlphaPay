@@ -66,11 +66,11 @@ AlphaPay is a secure and modern UPI-based payment system that includes a wide ra
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Kotlin(Jetpack Compose)
+- **Frontend**: Kotlin(**Jetpack Compose**)(_in progress_)
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB with Mongoose
 - **Authentication**: JWT, Email OTP
-- **Testing**: Jest, Supertest, MongoDB Memory Server
+- **Testing**: Jest, Supertest, MongoDB Memory Server(_in progress_)
 
 ---
 
