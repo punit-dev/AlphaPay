@@ -1,9 +1,9 @@
-# AlphaPay - Simplifying Digital Payment
+# 💸 AlphaPay - Simplifying Digital Payment
 
-**AlphaPay** is a secure, modern, and easy-to-use payment application designed to simulate real-world digital transaction using a custom demo payment gateway. Built with a robust backend and a planned Kotlin(Jetpack Compose) Android frontend, AlphaPay supports OTP-based login, user management, payment flows, and transaction history.
+**AlphaPay** is a secure, modern, and easy-to-use payment application designed to simulate real-world digital transaction using a custom demo payment gateway. Built with a robust backend and a planned Kotlin-based Android frontend, AlphaPay supports OTP-based login, user management, payment flows, and transaction history.
 
 > ⚙️ Backend: Node.js, Express.js, MongoDB<br>
-> 📱 Frontend: Kotlin (Jetpack Compose - coming soon)
+> 📱 Frontend: Kotlin (Android app – coming soon)
 
 ---
 
@@ -134,24 +134,24 @@ The mobile app will include:
 - Invoice viewer with QR verification
 - Graphical transaction report
 
-> 📌Android app will be built using **Jetpack Compose**
+> 📌 Android app will be built using **Jetpack Compose**
 
 ---
 
-## 🗺️Roadmap
+## 🗺️ Roadmap
 
-[x] Backend Core Logic
-[x] OTP Auth System with Testing
-[] QR Code Payment Support
-[] Kotlin Android Frontend
-[] Graph & Analytics
-[] Deployment (Backend + APK)
+- [x] Backend Core Logic
+- [x] OTP Auth System with Testing
+- [ ] QR Code Payment Support
+- [ ] Kotlin Android Frontend
+- [ ] Graph & Analytics
+- [ ] Deployment (Backend + APK)
 
 ---
 
-## 📄License
+## 📄 License
 
-This project is licensed under the [MIT License](LICENSE)
+This project is licensed under the [MIT License](LICENSE)<br>
 © 2025 Punit Poddar
 
 ---
