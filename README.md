@@ -1,8 +1,9 @@
-# AlphaPay
+# AlphaPay - Simplifying Digital Payment
 
-AlphaPay is a secure UPI-based payment gateway system, inspired by real-world fintech platforms. It allows users to send, receive, and manage money through virtual UPI IDs. backend built with Node.js, Express, and MongoDB, it ensures safety using encryption and token-based authentication.
+**AlphaPay** is a secure, modern, and easy-to-use payment application designed to simulate real-world digital transaction using a custom demo payment gateway. Built with a robust backend and a planned Kotlin(Jetpack Compose) Android frontend, AlphaPay supports OTP-based login, user management, payment flows, and transaction history.
 
-**_note:_** This project is for demonstration purposes only.
+> ⚙️ Backend: Node.js, Express.js, MongoDB<br>
+> 📱 Frontend: Kotlin (Jetpack Compose - coming soon)
 
 ---
 
@@ -68,11 +69,13 @@ AlphaPay is a secure and modern UPI-based payment system that includes a wide ra
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Kotlin(**Jetpack Compose**)(_in progress_)
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB with Mongoose
-- **Authentication**: JWT, Email OTP
-- **Testing**: Jest, Supertest, MongoDB Memory Server(_in progress_)
+| Layer      | Technology                             |
+| ---------- | -------------------------------------- |
+| Backend    | Node.js, Express.js                    |
+| Database   | MongoDB + Mongoose                     |
+| Frontend   | Kotlin (Jetpack Compose)               |
+| Auth & OTP | Custom Auth, JWT, OTP via Email        |
+| Testing    | Jest, Supertest, MongoDB Memory Server |
 
 ---
 
@@ -121,3 +124,36 @@ AlphaPay is a secure and modern UPI-based payment system that includes a wide ra
    ```
 
 ---
+
+## Frontend (Kotlin - In Progress)
+
+The mobile app will include:
+
+- QR Code and Scanner
+- Bill payment interface
+- Invoice viewer with QR verification
+- Graphical transaction report
+
+> 📌Android app will be built using **Jetpack Compose**
+
+---
+
+## 🗺️Roadmap
+
+[x] Backend Core Logic
+[x] OTP Auth System with Testing
+[] QR Code Payment Support
+[] Kotlin Android Frontend
+[] Graph & Analytics
+[] Deployment (Backend + APK)
+
+---
+
+## 📄License
+
+This project is licensed under the [MIT License](LICENSE)
+© 2025 Punit Poddar
+
+---
+
+> ⚠️ This project is developed and maintained by **Punit Poddar**.
