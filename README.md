@@ -2,7 +2,7 @@
 
 AlphaPay is a secure UPI-based payment gateway system, inspired by real-world fintech platforms. It allows users to send, receive, and manage money through virtual UPI IDs. backend built with Node.js, Express, and MongoDB, it ensures safety using encryption and token-based authentication.
 
-**_note:_** This project is for demonstration purposes only and does not process real payments.
+**_note:_** This project is for demonstration purposes only.
 
 ---
 
