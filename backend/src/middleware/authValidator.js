@@ -23,7 +23,10 @@ exports.validateRegister = [
 ];
 
 exports.validateLogin = [
-  body("data").notEmpty().withMessage("Email or username is required"),
+  body("data")
+    .notEmpty()
+    .isString()
+    .withMessage("Email or username is required"),
   body("password").notEmpty().withMessage("Password is required"),
 ];
 
@@ -33,7 +36,7 @@ exports.validateOTP = [
     .withMessage("OTP is required")
     .isLength({ min: 6, max: 6 })
     .withMessage("OTP must be valid"),
-  body("email").isEmail().withMessage("Valid email is required")
+  body("email").isEmail().withMessage("Valid email is required"),
 ];
 
 exports.validateEmail = [

@@ -14,11 +14,6 @@ const registerBill = asyncHandler(async (req, res) => {
   const user = req.user;
   const { provider, UIdType, UId, category, nickname } = req.body;
 
-  if (!provider || !UIdType || !UId || !category) {
-    res.status(400);
-    throw new Error("All fields required.");
-  }
-
   const isBillExists = await BillModel.findOne({
     $and: [{ userID: user._id }, { UId }],
   });

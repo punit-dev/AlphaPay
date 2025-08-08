@@ -18,6 +18,7 @@ afterAll(async () => {
   await mongo.stop();
 });
 
+//User object for tests
 const testUser = {
   username: "example123",
   fullname: "Example Test",
@@ -182,12 +183,10 @@ describe("auth route edge cases testing", () => {
     expect(res.body.message).toMatch("Incorrect username and password");
   });
   it("should reject NoSQL injection attempt", async () => {
-    const res = await request(app)
-      .post("/api/auth/login")
-      .send({
-        data: { $gt: "" },
-        password: "any",
-      });
+    const res = await request(app).post("/api/auth/login").send({
+      data: '{ $gt: "" }',
+      password: "any",
+    });
 
     expect(res.statusCode).toBe(404);
     expect(res.body.message).toBe("Incorrect username and password");

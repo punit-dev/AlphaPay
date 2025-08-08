@@ -26,9 +26,9 @@ const BillSchema = new mongoose.Schema({
   category: {
     type: String,
     enum: [
-      "MobileReacher",
-      "BroadbandReacher",
-      "DTH/CableTVReacher",
+      "MobileRecharge",
+      "BroadbandRecharge",
+      "DTH/CableTVRecharge",
       "GooglePayTopUp",
     ],
   },

@@ -8,7 +8,7 @@
     "start": "npx nodemon --exec node --require dotenv/config index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Punit Poddar",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
