@@ -35,10 +35,26 @@ app.use(
     },
   })
 );
-// if (process.env.NODE_ENV !== "test") {
-//   app.use(mongoSanitize());
-//   app.use(xss());
-// }
+
+app.use((req, res, next) => {
+  if (req.query && typeof req.query === "object") {
+    req.query = mongoSanitize.sanitize(req.query);
+  }
+  if (req.body && typeof req.body === "object") {
+    req.body = mongoSanitize.sanitize(req.body);
+  }
+  next();
+});
+app.use((req, res, next) => {
+  if (req.query && typeof req.query === "object") {
+    req.query = xss.toString(req.query);
+  }
+  if (req.body && typeof req.body === "object") {
+    req.body = xss.toString(req.body);
+  }
+  next();
+});
+
 app.use(hpp());
 app.use(
   cors({
