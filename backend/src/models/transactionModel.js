@@ -1,12 +1,16 @@
 const mongoose = require("mongoose");
 const encrypt = require("mongoose-encryption");
 
+//adding an transactionType field on payer and payee;
 const TransactionSchema = new mongoose.Schema(
   {
     payer: {
-      type: mongoose.Types.ObjectId,
-      required: true,
-      ref: "user",
+      userRef: { type: mongoose.Types.ObjectId, required: true, ref: "user" },
+      transactionType: {
+        type: String,
+        enum: ["CREDIT", "DEBIT"],
+        required: true,
+      },
     },
     payee: {
       name: String,
@@ -24,6 +28,10 @@ const TransactionSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "bill",
         default: null,
+      },
+      transactionType: {
+        type: String,
+        enum: ["CREDIT", "DEBIT"],
       },
       accountOrPhone: String,
     },

@@ -54,12 +54,16 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
 
   if (!(await comparePass(user.upiPin, pin))) {
     const failedTran = await TransactionModel.create({
-      payer: user._id,
+      payer: {
+        userRef: user._id,
+        transactionType: "DEBIT",
+      },
       payee: {
         name: isPayee.fullname,
         type: "user",
         userRef: isPayee._id,
         accountOrPhone: isPayee.phoneNumber,
+        transactionType: "CREDIT",
       },
       amount: amount,
       method: {
@@ -75,7 +79,10 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
   }
 
   const successTran = await TransactionModel.create({
-    payer: user._id,
+    payer: {
+      userRef: user._id,
+      transactionType: "DEBIT",
+    },
     payee: {
       name: isPayee.fullname,
       type: "user",
@@ -150,7 +157,10 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
 
   if (!(await comparePass(user.upiPin, pin))) {
     const failedTran = await TransactionModel.create({
-      payer: user._id,
+      payer: {
+        userRef: user._id,
+        transactionType: "DEBIT",
+      },
       payee: {
         name: isBill.provider,
         type: "bill",
@@ -176,7 +186,10 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
   }
 
   const successTran = await TransactionModel.create({
-    payer: user._id,
+    payer: {
+      userRef: user._id,
+      transactionType: "DEBIT",
+    },
     payee: {
       name: isBill.provider,
       type: "bill",
@@ -231,12 +244,16 @@ const walletRecharge = asyncHandler(async (req, res) => {
 
   if (!(await comparePass(user.upiPin, upiPin))) {
     const failedTran = await TransactionModel.create({
-      payer: user._id,
+      payer: {
+        userRef: user._id,
+        transactionType: "DEBIT",
+      },
       payee: {
         name: user.fullname,
         type: "wallet",
         userRef: user._id,
         accountOrPhone: user.phoneNumber,
+        transactionType: "CREDIT",
       },
       amount: amount,
       method: {
@@ -255,12 +272,16 @@ const walletRecharge = asyncHandler(async (req, res) => {
   await user.save();
 
   const successTran = await TransactionModel.create({
-    payer: user._id,
+    payer: {
+      userRef: user._id,
+      transactionType: "DEBIT",
+    },
     payee: {
       name: user.fullname,
       type: "wallet",
       userRef: user._id,
       accountOrPhone: user.phoneNumber,
+      transactionType: "CREDIT",
     },
     amount: amount,
     method: {
@@ -301,11 +322,11 @@ const verifyTransaction = asyncHandler(async (req, res) => {
 const getTransaction = asyncHandler(async (req, res) => {
   const user = req.user;
   const allTran = await TransactionModel.find({
-    $or: [{ "payee.userRef": user._id }, { payer: user._id }],
+    $or: [{ "payee.userRef": user._id }, { "payer.userRef": user._id }],
   })
     .sort({ createdAt: -1 })
     .populate("payee.userRef", "username upiId")
-    .populate("payer", "username upiId");
+    .populate("payer.userRef", "username upiId");
 
   if (!allTran) {
     res.status(404);
