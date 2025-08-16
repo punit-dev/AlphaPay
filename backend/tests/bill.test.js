@@ -107,3 +107,76 @@ describe("bill route testing", () => {
     expect(res.body.billID).toBe(billID);
   });
 });
+
+describe("bill route edge case testing", () => {
+  //register bill edge case
+  it("should reject bill registration with missing fields", async () => {
+    const res = await request(app)
+      .post("/api/bills/registerBill")
+      .send({})
+      .set({ authorization: `Bearer ${authToken}` });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toMatch(
+      "Provider is required, UIdType is required, UId is required, Category is required"
+    );
+  });
+  it("should reject bill registration with required authorization token", async () => {
+    const res = await request(app)
+      .post("/api/bills/registerBill")
+      .send({ ...testBill, UId: "1234567809" });
+    expect(res.statusCode).toBe(401);
+    expect(res.body.message).toMatch("Token is required");
+  });
+
+  //get bill edge case
+  it("should reject request with required authorization token", async () => {
+    const res = await request(app).get("/api/bills/getBills");
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.message).toBe("Token is required");
+  });
+
+  //update bill edge case
+  it("should reject update user bill with required UId query", async () => {
+    const res = await request(app)
+      .put(`/api/bills/updateBill?query=`)
+      .send({
+        provider: "VI",
+        UId: "8943748522",
+      })
+      .set({ authorization: `Bearer ${authToken}` });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toMatch("Bill UId query is required");
+  });
+  it("should reject update user bill with required authorization token", async () => {
+    const res = await request(app)
+      .put(`/api/bills/updateBill?query=${testBill.UId}`)
+      .send({
+        provider: "VI",
+        UId: "8943748522",
+      });
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.message).toMatch("Token is required");
+  });
+
+  //delete bill edge case
+  it("should reject to delete bill with missing field", async () => {
+    const res = await request(app)
+      .delete(`/api/bills/deleteBill?query=`)
+      .set({ authorization: `Bearer ${authToken}` });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Bill UId query is required");
+  });
+  it("should reject to delete card with required authorization token", async () => {
+    const res = await request(app).delete(
+      `/api/bills/deleteBill?query=${testBill.UId}`
+    );
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.message).toBe("Token is required");
+  });
+});

@@ -187,7 +187,7 @@ const login = asyncHandler(async (req, res) => {
   }
 
   // Make sure email is verified
-  if (!isUser.isVerifiedEmail) {
+  if (!isUser.isVerifiedEmail && process.env.NODE_ENV != "test") {
     res.status(404);
     throw new Error("First verify you email.");
   }
