@@ -60,7 +60,7 @@ const register = asyncHandler(async (req, res) => {
   });
 
   // Send OTP to user's email
-  await mailer(newUser.email, `this is you OTP: ${otp}`);
+  await mailer(newUser.email, otp);
 
   const filteredUser = newUser.toObject();
   delete filteredUser.__v;
@@ -151,7 +151,7 @@ const resendOTP = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  await mailer(email, `this is you OTP: ${otp}`);
+  await mailer(email, otp);
 
   // Save the new OTP token in DB
   user.otpToken = token;

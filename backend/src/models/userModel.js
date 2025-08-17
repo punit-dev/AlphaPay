@@ -71,6 +71,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    lastActiveAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );
@@ -95,7 +99,7 @@ const sigKey = process.env.SIG_KEY;
 UserSchema.plugin(encrypt, {
   encryptionKey: encKey,
   signingKey: sigKey,
-  encryptedFields: ["password", "phoneNumber", "upiPin", "dateOfBirth"],
+  encryptedFields: ["dateOfBirth"],
 });
 
 const UserModel = mongoose.model("user", UserSchema);

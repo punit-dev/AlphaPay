@@ -43,7 +43,7 @@ const updateUser = asyncHandler(async (req, res) => {
     const otp = generateOTP(6);
     const token = createToken({ otp }, "10m");
     user.otpToken = token;
-    await mailer(email, `this is you OTP: ${otp}`);
+    await mailer(email, otp);
   }
   if (dateOfBirth) user.dateOfBirth = dateOfBirth;
   if (phoneNumber && phoneNumber != user.phoneNumber) {
