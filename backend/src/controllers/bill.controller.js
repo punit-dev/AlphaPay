@@ -3,7 +3,13 @@ const BillModel = require("../models/billModel");
 const asyncHandler = require("express-async-handler");
 const checkValidation = require("../util/checkValidation");
 
+/**
+ * @route   POST /api/bills/registerBill
+ * @desc    Registers a new Bill
+ * @access  Privet
+ */
 const registerBill = asyncHandler(async (req, res) => {
+  // Validate request
   const isNotValid = checkValidation(req);
 
   if (isNotValid) {
@@ -14,6 +20,7 @@ const registerBill = asyncHandler(async (req, res) => {
   const user = req.user;
   const { provider, UIdType, UId, category, nickname } = req.body;
 
+  // Check bill exists or not
   const isBillExists = await BillModel.findOne({
     $and: [{ userID: user._id }, { UId }],
   });
@@ -22,6 +29,7 @@ const registerBill = asyncHandler(async (req, res) => {
     throw new Error("This Bill is already exits.");
   }
 
+  //register a new bill
   const newBill = await BillModel.create({
     userID: user._id,
     category: category,
@@ -35,6 +43,11 @@ const registerBill = asyncHandler(async (req, res) => {
     .json({ message: "Bill registered successfully", bill: newBill });
 });
 
+/**
+ * @route   GET /api/bills/getBills
+ * @desc    Get all bills of the logged-in user
+ * @access  Privet
+ */
 const getBills = asyncHandler(async (req, res) => {
   const user = req.user;
   const bills = await BillModel.find({ userID: user._id }).sort({
@@ -49,6 +62,11 @@ const getBills = asyncHandler(async (req, res) => {
   return res.status(200).json({ message: "All Bills", bills });
 });
 
+/**
+ * @route   PUT /api/bills/updateBill
+ * @desc    Update specific bill of the logged-in user
+ * @access  Privet
+ */
 const updateBill = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -69,6 +87,7 @@ const updateBill = asyncHandler(async (req, res) => {
     throw new Error("Bill not found.");
   }
 
+  //check is updated field are available then change if available
   if (provider && provider != bill.provider) {
     bill.provider = provider;
   }
@@ -84,6 +103,11 @@ const updateBill = asyncHandler(async (req, res) => {
     .json({ message: "Bill Updated Successfully", updatedBill: bill });
 });
 
+/**
+ * @route   DELETE /api/bills/deleteBill
+ * @desc    Delete specific bill of the logged-in user
+ * @access  Privet
+ */
 const deleteBill = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -108,4 +132,5 @@ const deleteBill = asyncHandler(async (req, res) => {
     .json({ message: "Bill deleted Successfully", billID: bill._id });
 });
 
+// Export all controller functions
 module.exports = { registerBill, getBills, updateBill, deleteBill };

@@ -127,7 +127,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
 
 /**
  * @route   POST /api/auth/resendOtp
- * @desc    Resends a new OTP to the user's email
+ * @desc    Re-sends a new OTP to the user's email
  * @access  Public
  */
 const resendOTP = asyncHandler(async (req, res) => {
@@ -187,8 +187,8 @@ const login = asyncHandler(async (req, res) => {
   }
 
   // Make sure email is verified
-  if (!isUser.isVerifiedEmail && process.env.NODE_ENV != "test") {
-    res.status(404);
+  if (!isUser.isVerifiedEmail && process.env.NODE_ENV === "production") {
+    res.status(400);
     throw new Error("First verify you email.");
   }
 

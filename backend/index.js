@@ -5,8 +5,13 @@ const connectDB = require("./src/config/db");
 
 const PORT = process.env.PORT;
 
+const mongoUri =
+  process.env.NODE_ENV === "production"
+    ? process.env.MONGO_URI
+    : "mongodb://0.0.0.0/alphapay";
+
 //connect database then run server
-connectDB(process.env.MONGO_URI).then(() => {
+connectDB(mongoUri).then(() => {
   server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });

@@ -4,7 +4,13 @@ const asyncHandler = require("express-async-handler");
 const checkValidation = require("../util/checkValidation");
 const isDateExpired = require("../util/dateCheck");
 
+/**
+ * @route   POST /api/cards/registerCard
+ * @desc    Registers a new Card
+ * @access  Privet
+ */
 const registerCard = asyncHandler(async (req, res) => {
+  // Validate request
   const isNotValid = checkValidation(req);
 
   if (isNotValid) {
@@ -24,6 +30,7 @@ const registerCard = asyncHandler(async (req, res) => {
     throw new Error("Card already saved.");
   }
 
+  //check is given expiry is expired or not using isDateExpired utility
   if (isDateExpired(expiryDate)) {
     res.status(400);
     throw new Error("This card is expired");
@@ -43,6 +50,11 @@ const registerCard = asyncHandler(async (req, res) => {
     .json({ message: "New Card added successfully", card: newCard });
 });
 
+/**
+ * @route   GET /api/cards/getCards
+ * @desc    Get all cards of the logged-in user
+ * @access  Privet
+ */
 const getCards = asyncHandler(async (req, res) => {
   const user = req.user;
   const cards = await CardModel.find({ userID: user._id }).sort({
@@ -57,6 +69,11 @@ const getCards = asyncHandler(async (req, res) => {
   return res.status(200).json({ message: "All cards", cards: cards });
 });
 
+/**
+ * @route   DELETE /api/cards/deleteCard
+ * @desc    Delete specific card of the logged-in user
+ * @access  Privet
+ */
 const deleteCard = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -66,7 +83,6 @@ const deleteCard = asyncHandler(async (req, res) => {
   }
 
   const { query } = req.query;
-
   const card = await CardModel.findByIdAndDelete(query);
   if (!card) {
     res.status(404);

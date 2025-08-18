@@ -1,8 +1,10 @@
 # AlphaPay API Documentation
 
-## Authentication
+**_Base URL_**: http://localhost:3000/api
 
-- `POST /api/auth/register`: Register a new user.
+## Authentication Route
+
+- `POST /auth/register`: Register a new user.
 
   - Request body:
     ```json
@@ -26,7 +28,7 @@
     }
     ```
 
-- `POST /api/auth/verifyOtp`: Verify OTP.
+- `POST /auth/verifyOtp`: Verify OTP.
 
   - Request body:
     ```json
@@ -42,7 +44,7 @@
     }
     ```
 
-- `POST /api/auth/resendOtp`: Resend the OTP.
+- `POST /auth/resendOtp`: Resend the OTP.
 
   - Request body:
     ```json
@@ -58,7 +60,7 @@
     }
     ```
 
-- `POST /api/auth/login`: Login user.
+- `POST /auth/login`: Login user.
 
   - Request body:
     ```json
@@ -76,7 +78,7 @@
     }
     ```
 
-- `POST /api/auth/logout`: Logout the user.
+- `POST /auth/logout`: Logout the user.
 
   - Headers:
     `{"authorization": "Bearer <User_authentication_token>"}`
@@ -89,7 +91,7 @@
 
 ## User
 
-- `GET /api/users/profile`: Get the user data.
+- `GET /users/profile`: Get the user data.
 
   - Headers:
     `{"authorization": "Bearer <User_authentication_token>"}`
@@ -101,7 +103,7 @@
     }
     ```
 
-- `PUT /api/users/update`: user can update data.
+- `PUT /users/update`: user can update data.
 
   - Headers:
     `{"authorization": "Bearer <User_authentication_token>"}`
@@ -125,7 +127,7 @@
     }
     ```
 
-- `PUT /api/users/updatePass`: user can update login password.
+- `PUT /users/updatePass`: user can update login password.
 
   - Headers:
     `{"authorization": "Bearer <User_authentication_token>"}`
@@ -144,7 +146,7 @@
     }
     ```
 
-- `PUT /api/users/updatePin`: user can update UPI pin.
+- `PUT /users/updatePin`: user can update UPI pin.
 
   - Headers:
     `{"authorization": "Bearer <User_authentication_token>"}`
@@ -163,7 +165,7 @@
     }
     ```
 
-- `DELETE /api/users/delete`: user can delete account.
+- `DELETE /users/delete`: user can delete account.
 
   - Headers:
     `{"authorization": "Bearer <User_authentication_token>"}`

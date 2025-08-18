@@ -7,7 +7,13 @@ const asyncHandler = require("express-async-handler");
 const { comparePass } = require("../util/hash");
 const checkValidation = require("../util/checkValidation");
 
+/**
+ * @route   POST /api/transactions/userToUser
+ * @desc    Transfer money from one user to another
+ * @access  Private
+ */
 const newUserToUserTransaction = asyncHandler(async (req, res) => {
+  // Validate request
   const isNotValid = checkValidation(req);
 
   if (isNotValid) {
@@ -17,11 +23,6 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
 
   const user = req.user;
   const { payee, amount, pin, method, message, cardID } = req.body;
-
-  if (!payee || !amount || !method || !pin) {
-    res.status(400);
-    throw new Error("All fields required.");
-  }
 
   const isPayee = await UserModel.findOne({ upiId: payee });
   if (!isPayee) {
@@ -33,25 +34,26 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Amount must be greater than zero.");
   }
-  if (method == "wallet") {
-    if (amount > user.walletBalance) {
-      res.status(400);
-      throw new Error("Your wallet balance is too low.");
-    }
+
+  // Wallet balance check
+  if (method === "wallet" && amount > user.walletBalance) {
+    res.status(400);
+    throw new Error("Your wallet balance is too low.");
   }
+
+  // Card payment validation
   if (method === "card" && !cardID) {
     res.status(400);
     throw new Error("Card ID is required for card payments.");
   }
 
   const isCard = await CardModel.findById(cardID);
-  if (method == "card") {
-    if (!isCard) {
-      res.status(404);
-      throw new Error("Card not found.");
-    }
+  if (method == "card" && !isCard) {
+    res.status(404);
+    throw new Error("Card not found.");
   }
 
+  // Validate UPI Pin
   if (!(await comparePass(user.upiPin, pin))) {
     const failedTran = await TransactionModel.create({
       payer: {
@@ -78,6 +80,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
     throw new Error("Transaction failed. Please check details and try again.");
   }
 
+  // SUCCESS Transaction
   const successTran = await TransactionModel.create({
     payer: {
       userRef: user._id,
@@ -98,9 +101,12 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
     message: message || "Paid",
   });
 
+  // Deduct wallet amount if wallet used
   if (method == "wallet") {
     user.walletBalance -= amount;
   }
+
+  // Update balances
   isPayee.walletBalance += amount;
 
   await Promise.all([user.save(), isPayee.save()]);
@@ -111,6 +117,11 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @route   POST /api/transactions/userToBill
+ * @desc    Pay a bill using wallet or card
+ * @access  Private
+ */
 const newUserToBillTransaction = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -121,11 +132,6 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
   const user = req.user;
   const { id, method, pin, cardID, amount, validity } = req.body;
 
-  if (!id || !method || !pin || !amount || !validity) {
-    res.status(400);
-    throw new Error("All fields required.");
-  }
-
   const isBill = await BillModel.findOne({
     $and: [{ userID: user._id }, { UId: id }],
   });
@@ -135,11 +141,9 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
     throw new Error("Bill not found");
   }
 
-  if (method == "wallet") {
-    if (amount > user.walletBalance) {
-      res.status(400);
-      throw new Error("Your wallet balance is low");
-    }
+  if (method == "wallet" && amount > user.walletBalance) {
+    res.status(400);
+    throw new Error("Your wallet balance is low");
   }
 
   if (method === "card" && !cardID) {
@@ -180,6 +184,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
     throw new Error("Transaction failed. Please check details and try again.");
   }
 
+  // Deduct wallet amount if wallet used
   if (method == "wallet") {
     user.walletBalance -= amount;
     await user.save();
@@ -204,6 +209,8 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
     status: "SUCCESS",
     message: "Bill paid",
   });
+
+  // Extend due date after payment
   const currentDate = new Date();
   currentDate.setDate(currentDate.getDate() + validity);
   isBill.dueDate = currentDate;
@@ -215,6 +222,11 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
     .json({ message: "Bill paid successfully", transaction: successTran });
 });
 
+/**
+ * @route   POST /api/transactions/walletRecharge
+ * @desc    Recharge wallet using card
+ * @access  Private
+ */
 const walletRecharge = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -226,22 +238,19 @@ const walletRecharge = asyncHandler(async (req, res) => {
   const user = req.user;
   const { amount, cardID, upiPin } = req.body;
 
-  if (!amount || !cardID || !upiPin) {
-    res.status(400);
-    throw new Error("All field required.");
-  }
-
   if (amount <= 0) {
     res.status(400);
     throw new Error("amount must be greater then 0");
   }
 
+  // Validate card
   const card = await CardModel.findById(cardID);
   if (!card) {
     res.status(404);
     throw new Error("Card not found");
   }
 
+  // Validate UPI Pin
   if (!(await comparePass(user.upiPin, upiPin))) {
     const failedTran = await TransactionModel.create({
       payer: {
@@ -268,9 +277,11 @@ const walletRecharge = asyncHandler(async (req, res) => {
     throw new Error("Transaction failed. Please check details and try again.");
   }
 
+  // Recharge wallet
   user.walletBalance += amount;
   await user.save();
 
+  // SUCCESS transaction
   const successTran = await TransactionModel.create({
     payer: {
       userRef: user._id,
@@ -298,6 +309,11 @@ const walletRecharge = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @route   GET /api/transactions/verifyTransaction?query=transactionId
+ * @desc    Verify a transaction by ID
+ * @access  Private
+ */
 const verifyTransaction = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -319,6 +335,11 @@ const verifyTransaction = asyncHandler(async (req, res) => {
     .json({ message: "This transaction is verified.", transaction });
 });
 
+/**
+ * @route   GET /api/transactions/allTransaction
+ * @desc    Get all transactions of the logged-in user
+ * @access  Private
+ */
 const getTransaction = asyncHandler(async (req, res) => {
   const user = req.user;
   const allTran = await TransactionModel.find({

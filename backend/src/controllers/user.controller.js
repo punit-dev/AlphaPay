@@ -9,8 +9,15 @@ const generateOTP = require("../util/generateOTP");
 const { createToken } = require("../util/token");
 const mailer = require("../util/mailer");
 
+/**
+ * @route   GET /api/users/profile
+ * @desc    Get user profile information
+ * @access  Privet
+ */
 const userProfile = asyncHandler(async (req, res) => {
   const user = req.user;
+
+  //remove all sensitive user info
   const filteredUser = user.toObject();
   delete filteredUser.password;
   delete filteredUser.__v;
@@ -21,7 +28,13 @@ const userProfile = asyncHandler(async (req, res) => {
     .json({ message: "User Profile Details", user: filteredUser });
 });
 
+/**
+ * @route   PUT /api/users/update
+ * @desc    Update user profile
+ * @access  Privet
+ */
 const updateUser = asyncHandler(async (req, res) => {
+  // Validate request
   const isNotValid = checkValidation(req);
 
   if (isNotValid) {
@@ -31,6 +44,8 @@ const updateUser = asyncHandler(async (req, res) => {
 
   const user = req.user;
   const { username, fullname, email, dateOfBirth, phoneNumber } = req.body;
+
+  //check is updated field are available then change if available
   if (username && username != user.username) {
     user.username = username;
     user.upiId = `${username}@alphapay`;
@@ -51,6 +66,7 @@ const updateUser = asyncHandler(async (req, res) => {
     user.isVerifiedPhoneNumber = false;
   }
   await user.save();
+
   const filteredUser = user.toObject();
   delete filteredUser.password;
   delete filteredUser.__v;
@@ -59,6 +75,11 @@ const updateUser = asyncHandler(async (req, res) => {
   return res.status(200).json({ message: "User Updated", user: filteredUser });
 });
 
+/**
+ * @route   PUT /api/users/updatePass
+ * @desc    Update the user login password
+ * @access  Privet
+ */
 const updatePass = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -70,17 +91,24 @@ const updatePass = asyncHandler(async (req, res) => {
   const user = req.user;
   const { newPass } = req.body;
 
+  //compare the updated password to current password
   if (await comparePass(user.password, newPass)) {
     res.status(400);
     throw new Error("This password is already set.");
   }
 
+  // assign a plain newPass because it will be hashed before saving
   user.password = newPass;
   await user.save();
 
   return res.status(200).json({ message: "Password is successfully updated" });
 });
 
+/**
+ * @route   PUT /api/users/updatePin
+ * @desc    Update the user UPI Pin
+ * @access  Privet
+ */
 const updateUpiPin = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -97,11 +125,17 @@ const updateUpiPin = asyncHandler(async (req, res) => {
     throw new Error("This UPI Pin is already set.");
   }
 
+  // assign a plain newPin because it will be hashed before saving
   user.upiPin = newPin;
   await user.save();
   return res.status(200).json({ message: "UPI Pin is successfully updated" });
 });
 
+/**
+ * @route   DELETE /api/users/delete
+ * @desc    Delete user and related data
+ * @access  Privet
+ */
 const deleteUser = asyncHandler(async (req, res) => {
   const user = req.user;
   await Promise.all([
@@ -121,6 +155,11 @@ const deleteUser = asyncHandler(async (req, res) => {
   return res.status(200).json({ message: "User Deleted Successfully" });
 });
 
+/**
+ * @route   GET /api/users/search
+ * @desc    Search an users using upiID OR phoneNumber
+ * @access  Privet
+ */
 const search = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
@@ -150,6 +189,7 @@ const search = asyncHandler(async (req, res) => {
   return res.status(200).json({ users });
 });
 
+// Export all controller functions
 module.exports = {
   userProfile,
   updateUser,
