@@ -58,7 +58,7 @@ app.use((req, res, next) => {
 app.use(hpp());
 app.use(
   cors({
-    origin: [],
+    origin: "*",
     credentials: true,
   })
 );
