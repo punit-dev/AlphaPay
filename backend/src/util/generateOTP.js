@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 /**
  * Generates a numeric One-Time Password (OTP) of given length.
  *
@@ -9,10 +11,9 @@
  * genOTP(4);     // "7401"
  */
 const genOTP = (len = 6) => {
-  let otp = "";
-  for (let i = 0; i < len; i++) {
-    otp += Math.floor(Math.random() * 10); // Append a random digit (0–9)
-  }
+  let otp = crypto
+    .randomInt(Math.pow(10, len - 1), Math.pow(10, len))
+    .toString();
   return otp;
 };
 

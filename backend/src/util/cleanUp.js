@@ -17,8 +17,6 @@ const UserModel = require("../models/userModel");
 const BillModel = require("../models/billModel");
 const CardModel = require("../models/cardModel");
 const TransactionModel = require("../models/transactionModel");
-const NotificationModel = require("../models/notificationModel");
-const { Promise } = require("mongoose");
 
 const cleanUp = async () => {
   try {
@@ -40,7 +38,6 @@ const cleanUp = async () => {
         TransactionModel.deleteMany({ userId: user._id }),
         BillModel.deleteMany({ userId: user._id }),
         CardModel.deleteMany({ userId: user._id }),
-        NotificationModel.deleteMany({ userID: user._id }),
       ]);
     }
 

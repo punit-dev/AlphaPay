@@ -6,6 +6,7 @@ const CardModel = require("../models/cardModel");
 const asyncHandler = require("express-async-handler");
 const { comparePass } = require("../util/hash");
 const checkValidation = require("../util/checkValidation");
+const { sendData } = require("../util/sockets");
 
 /**
  * @route   POST /api/transactions/userToUser
@@ -70,7 +71,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
       amount: amount,
       method: {
         type: method,
-        cardRef: method == "card" && isCard._id,
+        cardRef: method == "card" ? isCard._id : null,
       },
       status: "FAILED",
       message: "Transaction failed.",
@@ -95,7 +96,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
     amount: amount,
     method: {
       type: method,
-      cardRef: method == "card" && isCard._id,
+      cardRef: method == "card" ? isCard._id : null,
     },
     status: "SUCCESS",
     message: message || "Paid",
@@ -110,6 +111,22 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
   isPayee.walletBalance += amount;
 
   await Promise.all([user.save(), isPayee.save()]);
+
+  //push a success transaction notification
+  sendData(isPayee.socketID, "tran", {
+    type: "credit",
+    message: `You have received a payment from ${user.fullname}`,
+    transaction: successTran,
+    balance: isPayee.walletBalance,
+    time: new Date(),
+  });
+  sendData(user.socketID, "tran", {
+    type: "debit",
+    message: `You have sent a payment to ${isPayee.fullname}`,
+    transaction: successTran,
+    balance: user.walletBalance,
+    time: new Date(),
+  });
 
   return res.status(201).json({
     message: "Transaction successfully completed.",

@@ -1,7 +1,11 @@
 const dotenv = require("@dotenvx/dotenvx");
 dotenv.config();
-const server = require("./src/app");
+const { createServer } = require("http");
+const app = require("./src/app");
 const connectDB = require("./src/config/db");
+const { initializeSocket } = require("./src/util/sockets");
+
+const server = createServer(app);
 
 const PORT = process.env.PORT;
 
@@ -16,6 +20,9 @@ connectDB(mongoUri).then(() => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
 });
+
+// initialize socket.io using utility function
+initializeSocket(server);
 
 // 🧹 Auto Cleanup Job
 // ---------------------------------

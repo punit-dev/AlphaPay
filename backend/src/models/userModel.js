@@ -8,6 +8,10 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    socketID: {
+      type: String,
+      default: null,
+    },
     upiId: {
       type: String,
       unique: true,
