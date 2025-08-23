@@ -14,15 +14,15 @@ const mongoUri =
     ? process.env.MONGO_URI
     : "mongodb://0.0.0.0/alphapay";
 
+// initialize socket.io using utility function
+initializeSocket(server);
+
 //connect database then run server
 connectDB(mongoUri).then(() => {
   server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
 });
-
-// initialize socket.io using utility function
-initializeSocket(server);
 
 // 🧹 Auto Cleanup Job
 // ---------------------------------
@@ -31,4 +31,4 @@ initializeSocket(server);
 // will run automatically in the background.
 // It does not block the main server.
 // ---------------------------------
-require("./src/util/cleanUp");
+require("./src/cron");

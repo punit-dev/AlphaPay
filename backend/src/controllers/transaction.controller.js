@@ -2,6 +2,7 @@ const TransactionModel = require("../models/transactionModel");
 const UserModel = require("../models/userModel");
 const BillModel = require("../models/billModel");
 const CardModel = require("../models/cardModel");
+const NotificationModel = require("../models/notificationModel");
 
 const asyncHandler = require("express-async-handler");
 const { comparePass } = require("../util/hash");
@@ -112,21 +113,38 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
 
   await Promise.all([user.save(), isPayee.save()]);
 
+  const notify = await NotificationModel.insertMany([
+    {
+      userID: isPayee._id,
+      action: "credit",
+      message: `You have received ₹${amount} from ${user.fullname}`,
+      data: {
+        transactionId: successTran._id,
+        amount: amount,
+        from: user.fullname,
+        to: isPayee.fullname,
+        status: successTran.status,
+      },
+      balance: isPayee.walletBalance,
+    },
+    {
+      userID: user._id,
+      action: "debit",
+      message: `You sent ₹${amount} to ${isPayee.fullname}`,
+      data: {
+        transactionId: successTran._id,
+        amount: amount,
+        from: user.fullname,
+        to: isPayee.fullname,
+        status: successTran.status,
+      },
+      balance: user.walletBalance,
+    },
+  ]);
+
   //push a success transaction notification
-  sendData(isPayee.socketID, "tran", {
-    type: "credit",
-    message: `You have received a payment from ${user.fullname}`,
-    transaction: successTran,
-    balance: isPayee.walletBalance,
-    time: new Date(),
-  });
-  sendData(user.socketID, "tran", {
-    type: "debit",
-    message: `You have sent a payment to ${isPayee.fullname}`,
-    transaction: successTran,
-    balance: user.walletBalance,
-    time: new Date(),
-  });
+  sendData(isPayee.socketID, "tran", notify[0]);
+  sendData(user.socketID, "tran", notify[1]);
 
   return res.status(201).json({
     message: "Transaction successfully completed.",
@@ -201,12 +219,6 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
     throw new Error("Transaction failed. Please check details and try again.");
   }
 
-  // Deduct wallet amount if wallet used
-  if (method == "wallet") {
-    user.walletBalance -= amount;
-    await user.save();
-  }
-
   const successTran = await TransactionModel.create({
     payer: {
       userRef: user._id,
@@ -227,12 +239,35 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
     message: "Bill paid",
   });
 
+  // Deduct wallet amount if wallet used
+  if (method == "wallet") {
+    user.walletBalance -= amount;
+  }
+
   // Extend due date after payment
   const currentDate = new Date();
   currentDate.setDate(currentDate.getDate() + validity);
   isBill.dueDate = currentDate;
   isBill.markModified("dueDate");
-  await isBill.save();
+  await Promise.all([user.save(), isBill.save()]);
+
+  const notify = await NotificationModel.create({
+    userID: user._id,
+    type: "bill",
+    action: "debit",
+    message: `Your ${
+      isBill.nickname || isBill.category
+    } bill has been paid successfully.`,
+    data: {
+      transactionId: successTran._id,
+      amount: amount,
+      from: user.fullname,
+      to: isBill.provider,
+      status: successTran.status,
+    },
+    balance: user.walletBalance,
+  });
+  sendData(user.socketID, "tran", notify);
 
   return res
     .status(201)
@@ -319,6 +354,22 @@ const walletRecharge = asyncHandler(async (req, res) => {
     status: "SUCCESS",
     message: "Money added to wallet",
   });
+
+  const notify = await NotificationModel.create({
+    userID: user._id,
+    type: "transaction",
+    action: "credit",
+    message: `Your wallet has been recharged successfully.`,
+    data: {
+      transactionId: successTran._id,
+      amount: amount,
+      from: user.fullname,
+      to: "wallet",
+      status: successTran.status,
+    },
+    balance: user.walletBalance,
+  });
+  sendData(user.socketID, "tran", notify);
 
   return res.status(201).json({
     message: "Money successfully add to you wallet.",
