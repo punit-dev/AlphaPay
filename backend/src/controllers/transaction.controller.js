@@ -116,6 +116,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
   const notify = await NotificationModel.insertMany([
     {
       userID: isPayee._id,
+      type: "transaction",
       action: "credit",
       message: `You have received ₹${amount} from ${user.fullname}`,
       data: {
@@ -129,6 +130,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
     },
     {
       userID: user._id,
+      type: "transaction",
       action: "debit",
       message: `You sent ₹${amount} to ${isPayee.fullname}`,
       data: {
