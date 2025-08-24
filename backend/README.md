@@ -28,7 +28,7 @@
     }
     ```
 
-- `POST /auth/verifyOtp`: Verify OTP.
+- `POST /auth/verify-otp`: Verify OTP.
 
   - Request body:
     ```json
@@ -44,7 +44,7 @@
     }
     ```
 
-- `POST /auth/resendOtp`: Resend the OTP.
+- `POST /auth/resend-otp`: Resend the OTP.
 
   - Request body:
     ```json
@@ -127,7 +127,7 @@
     }
     ```
 
-- `PUT /users/updatePass`: user can update login password.
+- `PUT /users/update-pass`: user can update login password.
 
   - Headers:
     `{"authorization": "Bearer <User_authentication_token>"}`

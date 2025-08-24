@@ -13,13 +13,13 @@ route.put(
   UserController.updateUser
 );
 route.put(
-  "/updatePass",
+  "/update-pass",
   userValidator.validateUpdatePass,
   authMiddleware,
   UserController.updatePass
 );
 route.put(
-  "/updatePin",
+  "/update-pin",
   userValidator.validateUpdatePin,
   authMiddleware,
   UserController.updateUpiPin

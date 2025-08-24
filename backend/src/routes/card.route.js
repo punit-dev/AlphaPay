@@ -6,14 +6,14 @@ const CardController = require("../controllers/card.controller");
 const cardValidator = require("../middleware/cardValidator");
 
 route.post(
-  "/registerCard",
+  "/register-card",
   cardValidator.registerCardValidator,
   authMiddleware,
   CardController.registerCard
 );
-route.get("/getCards", authMiddleware, CardController.getCards);
+route.get("/get-cards", authMiddleware, CardController.getCards);
 route.delete(
-  "/deleteCard",
+  "/delete-card",
   cardValidator.deleteCardValidator,
   authMiddleware,
   CardController.deleteCard

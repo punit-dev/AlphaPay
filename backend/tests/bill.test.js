@@ -44,7 +44,7 @@ beforeEach(async () => {
 
   authToken = res.body.token;
   const resp = await request(app)
-    .post("/api/bills/registerBill")
+    .post("/api/bills/register-bill")
     .send(testBill)
     .set({
       authorization: `Bearer ${authToken}`,
@@ -63,7 +63,7 @@ afterAll(async () => {
 describe("bill route testing", () => {
   it("should register a bill", async () => {
     const res = await request(app)
-      .post("/api/bills/registerBill")
+      .post("/api/bills/register-bill")
       .send({ ...testBill, UId: "1234567809" })
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -77,7 +77,7 @@ describe("bill route testing", () => {
   });
   it("should get user bills", async () => {
     const res = await request(app)
-      .get("/api/bills/getBills")
+      .get("/api/bills/get-bills")
       .set({ authorization: `Bearer ${authToken}` });
     expect(res.statusCode).toBe(200);
     const bills = res.body.bills;
@@ -85,7 +85,7 @@ describe("bill route testing", () => {
   });
   it("should update user bill", async () => {
     const res = await request(app)
-      .put(`/api/bills/updateBill?query=${testBill.UId}`)
+      .put(`/api/bills/update-bill?query=${testBill.UId}`)
       .send({
         provider: "VI",
         UId: "8943748522",
@@ -99,7 +99,7 @@ describe("bill route testing", () => {
   });
   it("should delete user bill", async () => {
     const res = await request(app)
-      .delete(`/api/bills/deleteBill?query=${testBill.UId}`)
+      .delete(`/api/bills/delete-bill?query=${testBill.UId}`)
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(200);
@@ -112,7 +112,7 @@ describe("bill route edge case testing", () => {
   //register bill edge case
   it("should reject bill registration with missing fields", async () => {
     const res = await request(app)
-      .post("/api/bills/registerBill")
+      .post("/api/bills/register-bill")
       .send({})
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -123,7 +123,7 @@ describe("bill route edge case testing", () => {
   });
   it("should reject bill registration with required authorization token", async () => {
     const res = await request(app)
-      .post("/api/bills/registerBill")
+      .post("/api/bills/register-bill")
       .send({ ...testBill, UId: "1234567809" });
     expect(res.statusCode).toBe(401);
     expect(res.body.message).toMatch("Token is required");
@@ -131,7 +131,7 @@ describe("bill route edge case testing", () => {
 
   //get bill edge case
   it("should reject request with required authorization token", async () => {
-    const res = await request(app).get("/api/bills/getBills");
+    const res = await request(app).get("/api/bills/get-bills");
 
     expect(res.statusCode).toBe(401);
     expect(res.body.message).toBe("Token is required");
@@ -140,7 +140,7 @@ describe("bill route edge case testing", () => {
   //update bill edge case
   it("should reject update user bill with required UId query", async () => {
     const res = await request(app)
-      .put(`/api/bills/updateBill?query=`)
+      .put(`/api/bills/update-bill?query=`)
       .send({
         provider: "VI",
         UId: "8943748522",
@@ -152,7 +152,7 @@ describe("bill route edge case testing", () => {
   });
   it("should reject update user bill with required authorization token", async () => {
     const res = await request(app)
-      .put(`/api/bills/updateBill?query=${testBill.UId}`)
+      .put(`/api/bills/update-bill?query=${testBill.UId}`)
       .send({
         provider: "VI",
         UId: "8943748522",
@@ -165,7 +165,7 @@ describe("bill route edge case testing", () => {
   //delete bill edge case
   it("should reject to delete bill with missing field", async () => {
     const res = await request(app)
-      .delete(`/api/bills/deleteBill?query=`)
+      .delete(`/api/bills/delete-bill?query=`)
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(400);
@@ -173,7 +173,7 @@ describe("bill route edge case testing", () => {
   });
   it("should reject to delete card with required authorization token", async () => {
     const res = await request(app).delete(
-      `/api/bills/deleteBill?query=${testBill.UId}`
+      `/api/bills/delete-bill?query=${testBill.UId}`
     );
 
     expect(res.statusCode).toBe(401);

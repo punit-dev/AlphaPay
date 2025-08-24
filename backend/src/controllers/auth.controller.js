@@ -220,7 +220,7 @@ const login = asyncHandler(async (req, res) => {
 /**
  * @route   POST /api/auth/logout
  * @desc    Logs the user out by clearing the cookie
- * @access  Public
+ * @access  Privet
  */
 const logout = asyncHandler(async (req, res) => {
   res.clearCookie("token", {

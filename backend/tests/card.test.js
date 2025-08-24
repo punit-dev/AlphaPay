@@ -36,7 +36,7 @@ beforeEach(async () => {
 
   authToken = res.body.token;
   const resp = await request(app)
-    .post("/api/cards/registerCard")
+    .post("/api/cards/register-card")
     .send({
       cardNumber: 1234567390128456,
       CVV: 244,
@@ -61,7 +61,7 @@ afterAll(async () => {
 describe("card route testing", () => {
   it("should add card", async () => {
     const res = await request(app)
-      .post("/api/cards/registerCard")
+      .post("/api/cards/register-card")
       .send({
         cardNumber: 1234567890123456,
         CVV: 234,
@@ -84,7 +84,7 @@ describe("card route testing", () => {
 
   it("should get all card", async () => {
     const res = await request(app)
-      .get("/api/cards/getCards")
+      .get("/api/cards/get-cards")
       .set({
         authorization: `Bearer ${authToken}`,
       });
@@ -98,7 +98,7 @@ describe("card route testing", () => {
 
   it("should delete card", async () => {
     const res = await request(app)
-      .delete(`/api/cards/deleteCard?query=${cardID}`)
+      .delete(`/api/cards/delete-card?query=${cardID}`)
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(200);
@@ -110,7 +110,7 @@ describe("card route edge case testing", () => {
   //register card edge case
   it("should reject card registration with missing fields", async () => {
     const res = await request(app)
-      .post("/api/cards/registerCard")
+      .post("/api/cards/register-card")
       .send({})
       .set({
         authorization: `Bearer ${authToken}`,
@@ -122,7 +122,7 @@ describe("card route edge case testing", () => {
   });
   it("should reject card registration with incorrect format", async () => {
     const res = await request(app)
-      .post("/api/cards/registerCard")
+      .post("/api/cards/register-card")
       .send({
         cardNumber: 12345789023456,
         CVV: "234",
@@ -140,7 +140,7 @@ describe("card route edge case testing", () => {
   });
   it("should reject card registration with expiryDate is expired", async () => {
     const res = await request(app)
-      .post("/api/cards/registerCard")
+      .post("/api/cards/register-card")
       .send({
         cardNumber: 1234567890123456,
         CVV: 234,
@@ -155,7 +155,7 @@ describe("card route edge case testing", () => {
     expect(res.body.message).toMatch("This card is expired");
   });
   it("should reject card registration with required authorization token", async () => {
-    const res = await request(app).post("/api/cards/registerCard").send({
+    const res = await request(app).post("/api/cards/register-card").send({
       cardNumber: 12345789023456,
       CVV: 234,
       expiryDate: "12/25",
@@ -168,7 +168,7 @@ describe("card route edge case testing", () => {
 
   //get cards edge case
   it("should reject request with required authorization token", async () => {
-    const res = await request(app).get("/api/cards/getCards");
+    const res = await request(app).get("/api/cards/get-cards");
 
     expect(res.statusCode).toBe(401);
     expect(res.body.message).toBe("Token is required");
@@ -177,7 +177,7 @@ describe("card route edge case testing", () => {
   //delete card edge case
   it("should reject to delete card with missing field", async () => {
     const res = await request(app)
-      .delete(`/api/cards/deleteCard`)
+      .delete(`/api/cards/delete-card`)
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(400);
@@ -185,7 +185,7 @@ describe("card route edge case testing", () => {
   });
   it("should reject to delete card with required authorization token", async () => {
     const res = await request(app).delete(
-      `/api/cards/deleteCard?query=${cardID}`
+      `/api/cards/delete-card?query=${cardID}`
     );
 
     expect(res.statusCode).toBe(401);

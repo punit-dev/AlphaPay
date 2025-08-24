@@ -23,6 +23,10 @@ const notificationSchema = new mongoose.Schema(
     },
     data: { type: Object },
     balance: { type: Number },
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

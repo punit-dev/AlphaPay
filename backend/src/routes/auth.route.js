@@ -10,8 +10,12 @@ route.post(
   authValidator.validateRegister,
   AuthController.register
 );
-route.post("/verifyOtp", authValidator.validateOTP, AuthController.verifyOTP);
-route.post("/resendOtp", authValidator.validateEmail, AuthController.resendOTP);
+route.post("/verify-otp", authValidator.validateOTP, AuthController.verifyOTP);
+route.post(
+  "/resend-otp",
+  authValidator.validateEmail,
+  AuthController.resendOTP
+);
 route.post("/login", authValidator.validateLogin, AuthController.login);
 route.post("/logout", authMiddleware, AuthController.logout);
 

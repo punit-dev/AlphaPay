@@ -52,7 +52,7 @@ describe("auth route testing", () => {
 
   it("should otp verify", async () => {
     const res = await request(app)
-      .post("/api/auth/verifyOtp")
+      .post("/api/auth/verify-otp")
       .send({ otp: otp, email: "domojeb184@ikanteri.com" });
 
     expect(res.statusCode).toBe(200);
@@ -60,7 +60,7 @@ describe("auth route testing", () => {
 
   it("should user resend OTP", async () => {
     const res = await request(app)
-      .post("/api/auth/resendOtp")
+      .post("/api/auth/resend-otp")
       .send({ email: "domojeb184@ikanteri.com" });
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toBe("OTP sent successfully");
@@ -89,9 +89,9 @@ describe("auth route testing", () => {
 });
 
 describe("auth route edge cases testing", () => {
-  //verifyOtp edge case
+  //verify-otp edge case
   it("should not verify OTP without otp and token", async () => {
-    const res = await request(app).post("/api/auth/verifyOtp").send({});
+    const res = await request(app).post("/api/auth/verify-otp").send({});
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toMatch(
       "OTP is required, OTP must be valid, Valid email is required"
@@ -99,7 +99,7 @@ describe("auth route edge cases testing", () => {
   });
   it("should not verify with invalid OTP format", async () => {
     const res = await request(app)
-      .post("/api/auth/verifyOtp")
+      .post("/api/auth/verify-otp")
       .send({ otp: "abc123", email: "fakeEmail" });
 
     expect(res.statusCode).toBe(400);
@@ -153,12 +153,12 @@ describe("auth route edge cases testing", () => {
   });
 
   it("should not resend OTP with missing fields", async () => {
-    const res = await request(app).post("/api/auth/resendOtp").send();
+    const res = await request(app).post("/api/auth/resend-otp").send();
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toBe("Valid email is required");
   });
   it("should not resend OTP with wrong credential", async () => {
-    const res = await request(app).post("/api/auth/resendOtp").send({
+    const res = await request(app).post("/api/auth/resend-otp").send({
       email: "wrongEmail@mail.com",
     });
     expect(res.statusCode).toBe(404);

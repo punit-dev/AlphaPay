@@ -78,7 +78,7 @@ describe("user route testing", () => {
 
   it("should update user login password", async () => {
     const res = await request(app)
-      .put("/api/users/updatePass")
+      .put("/api/users/update-pass")
       .send({
         newPass: "7746231005",
       })
@@ -90,7 +90,7 @@ describe("user route testing", () => {
 
   it("should update user UPI Pin", async () => {
     const res = await request(app)
-      .put("/api/users/updatePin")
+      .put("/api/users/update-pin")
       .send({
         newPin: "774623",
       })
@@ -146,7 +146,7 @@ describe("user route edge cases testing", () => {
   //update password edge case
   it("should return 400 if newPass is not provided", async () => {
     const res = await request(app)
-      .put("/api/users/updatePass")
+      .put("/api/users/update-pass")
       .send({})
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -158,7 +158,7 @@ describe("user route edge cases testing", () => {
 
   it("should return 400 if newPass is same as old password", async () => {
     const res = await request(app)
-      .put("/api/users/updatePass")
+      .put("/api/users/update-pass")
       .send({ newPass: "123456789" })
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -169,7 +169,7 @@ describe("user route edge cases testing", () => {
   //update UPI pin edge case
   it("should return 400 if newPin is not provided", async () => {
     const res = await request(app)
-      .put("/api/users/updatePin")
+      .put("/api/users/update-pin")
       .send({})
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -181,7 +181,7 @@ describe("user route edge cases testing", () => {
 
   it("should return 400 if newPin is same as old pin", async () => {
     const res = await request(app)
-      .put("/api/users/updatePin")
+      .put("/api/users/update-pin")
       .send({ newPin: "123456" })
       .set({ authorization: `Bearer ${authToken}` });
 
