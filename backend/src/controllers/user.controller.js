@@ -120,7 +120,7 @@ const updateUpiPin = asyncHandler(async (req, res) => {
   const user = req.user;
   const { newPin } = req.body;
 
-  if (await comparePass(user.upiPin, newPin)) {
+  if (user.upiPin && (await comparePass(user.upiPin, newPin))) {
     res.status(400);
     throw new Error("This UPI Pin is already set.");
   }

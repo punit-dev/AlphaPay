@@ -13,7 +13,6 @@ const testUser = {
   password: "123456789",
   email: "domojeb184@ikanteri.com",
   phoneNumber: "9832713485",
-  upiPin: "123456",
   dateOfBirth: "2000-01-01",
 };
 
@@ -35,6 +34,11 @@ beforeEach(async () => {
   });
 
   authToken = res.body.token;
+  await request(app)
+    .put("/api/users/update-pin")
+    .send({ newPin: "123456" })
+    .set({ authorization: `Bearer ${authToken}` });
+
   const resp = await request(app)
     .post("/api/cards/register-card")
     .send({

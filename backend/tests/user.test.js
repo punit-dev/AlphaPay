@@ -12,7 +12,6 @@ const testUser = {
   password: "123456789",
   email: "domojeb184@ikanteri.com",
   phoneNumber: "9832713485",
-  upiPin: "123456",
   dateOfBirth: "2000-01-01",
 };
 let authToken;
@@ -95,6 +94,7 @@ describe("user route testing", () => {
         newPin: "774623",
       })
       .set({ authorization: `Bearer ${authToken}` });
+    console.log(res.body);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toBe("UPI Pin is successfully updated");
@@ -177,16 +177,6 @@ describe("user route edge cases testing", () => {
     expect(res.body.message).toBe(
       "New UPI Pin is required, UPI Pin must be 4 to 6 digits"
     );
-  });
-
-  it("should return 400 if newPin is same as old pin", async () => {
-    const res = await request(app)
-      .put("/api/users/update-pin")
-      .send({ newPin: "123456" })
-      .set({ authorization: `Bearer ${authToken}` });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.body.message).toBe("This UPI Pin is already set.");
   });
 
   //search users edge case

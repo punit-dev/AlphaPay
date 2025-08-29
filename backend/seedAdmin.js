@@ -24,7 +24,7 @@ const createAdmin = async () => {
       isVerifiedEmail: true,
       isVerifiedPhoneNumber: true,
       dateOfBirth: new Date("1990-01-01"),
-      upiPin: "123456",
+      '',
       isAdmin: true,
     });
 

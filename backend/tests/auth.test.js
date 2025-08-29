@@ -25,7 +25,6 @@ const testUser = {
   password: "123456789",
   email: "domojeb184@ikanteri.com",
   phoneNumber: "9832713485",
-  upiPin: "123456",
   dateOfBirth: "2000-01-01",
 };
 
@@ -116,7 +115,7 @@ describe("auth route edge cases testing", () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toMatch(
-      `Username is required, Username must be at least 5 characters, Fullname is required, Valid email is required, Valid phone number is required, Password must be at least 6 characters, UPI Pin must be 4-6 digits, Valid date of birth is required`
+      `Username is required, Username must be at least 5 characters, Fullname is required, Valid email is required, Valid phone number is required, Password must be at least 6 characters, Valid date of birth is required`
     );
   });
   it("should reject registration with invalid email", async () => {

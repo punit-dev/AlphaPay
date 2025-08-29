@@ -14,9 +14,6 @@ exports.validateRegister = [
   body("password")
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters"),
-  body("upiPin")
-    .isLength({ min: 4, max: 6 })
-    .withMessage("UPI Pin must be 4-6 digits"),
   body("dateOfBirth")
     .isISO8601()
     .withMessage("Valid date of birth is required"),

@@ -21,15 +21,8 @@ const register = asyncHandler(async (req, res) => {
     throw isNotValid;
   }
 
-  const {
-    username,
-    fullname,
-    password,
-    email,
-    phoneNumber,
-    upiPin,
-    dateOfBirth,
-  } = req.body;
+  const { username, fullname, password, email, phoneNumber, dateOfBirth } =
+    req.body;
 
   const isUser = await UserModel.findOne({
     $or: [{ username }, { email }],
@@ -53,7 +46,6 @@ const register = asyncHandler(async (req, res) => {
     password,
     email,
     phoneNumber,
-    upiPin,
     dateOfBirth,
     walletBalance,
     otpToken: token,

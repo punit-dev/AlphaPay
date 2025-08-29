@@ -61,7 +61,7 @@ const UserSchema = new mongoose.Schema(
     },
     upiPin: {
       type: String,
-      required: true,
+      default: null,
     },
     dateOfBirth: {
       type: Date,
@@ -77,7 +77,7 @@ const UserSchema = new mongoose.Schema(
     },
     lastActiveAt: {
       type: Date,
-      default: Date.now,
+      default: Date.now(),
     },
   },
   { timestamps: true }
