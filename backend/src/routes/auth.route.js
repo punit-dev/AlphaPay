@@ -17,6 +17,6 @@ route.post(
   AuthController.resendOTP
 );
 route.post("/login", authValidator.validateLogin, AuthController.login);
-route.post("/logout", authMiddleware, AuthController.logout);
+route.post("/logout", authMiddleware.userAuthMiddleware, AuthController.logout);
 
 module.exports = route;

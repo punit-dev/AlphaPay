@@ -23,7 +23,7 @@ const registerCard = asyncHandler(async (req, res) => {
 
   const card = await CardModel.findOne({
     cardNumber,
-    userID: user._id,
+    userId: user._id,
   });
   if (card) {
     res.status(400);
@@ -42,7 +42,7 @@ const registerCard = asyncHandler(async (req, res) => {
     expiryDate,
     cardNumber,
     type,
-    userID: user._id,
+    userId: user._id,
   });
 
   return res
@@ -57,7 +57,7 @@ const registerCard = asyncHandler(async (req, res) => {
  */
 const getCards = asyncHandler(async (req, res) => {
   const user = req.user;
-  const cards = await CardModel.find({ userID: user._id }).sort({
+  const cards = await CardModel.find({ userId: user._id }).sort({
     createdAt: -1,
   });
 

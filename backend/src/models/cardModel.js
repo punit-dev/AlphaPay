@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const encrypt = require("mongoose-encryption");
 
 const CardSchema = new mongoose.Schema({
-  userID: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "user",

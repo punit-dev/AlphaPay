@@ -10,11 +10,11 @@ const checkValidation = require("../util/checkValidation");
 const getNotifications = asyncHandler(async (req, res) => {
   const user = req.user;
 
-  const notifications = await NotificationModel.find({ userID: user._id })
+  const notifications = await NotificationModel.find({ userId: user._id })
     .sort({
       createdAt: -1,
     })
-    .populate("userID", "username upiId");
+    .populate("userId", "username upiId");
 
   if (!notifications) {
     res.status(404);

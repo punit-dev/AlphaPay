@@ -8,20 +8,24 @@ const billValidator = require("../middleware/billValidator");
 route.post(
   "/register-bill",
   billValidator.registerBillValidator,
-  authMiddleware,
+  authMiddleware.userAuthMiddleware,
   BillController.registerBill
 );
-route.get("/get-bills", authMiddleware, BillController.getBills);
+route.get(
+  "/get-bills",
+  authMiddleware.userAuthMiddleware,
+  BillController.getBills
+);
 route.put(
   "/update-bill",
   billValidator.updateBillValidator,
-  authMiddleware,
+  authMiddleware.userAuthMiddleware,
   BillController.updateBill
 );
 route.delete(
   "/delete-bill",
   billValidator.deleteBillValidator,
-  authMiddleware,
+  authMiddleware.userAuthMiddleware,
   BillController.deleteBill
 );
 

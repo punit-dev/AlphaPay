@@ -52,7 +52,7 @@ const register = asyncHandler(async (req, res) => {
   });
 
   // Send OTP to user's email
-  await mailer(newUser.email, otp);
+  await mailer.sendOTP(newUser.email, otp);
 
   const filteredUser = newUser.toObject();
   delete filteredUser.__v;
@@ -61,7 +61,7 @@ const register = asyncHandler(async (req, res) => {
   delete filteredUser.otpToken;
 
   // Create auth token after registration
-  const authToken = createToken({ userID: newUser._id });
+  const authToken = createToken({ userId: newUser._id });
   res.cookie("token", authToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -143,7 +143,7 @@ const resendOTP = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  await mailer(email, otp);
+  await mailer.sendOTP(email, otp);
 
   // Save the new OTP token in DB
   user.otpToken = token;
@@ -196,7 +196,7 @@ const login = asyncHandler(async (req, res) => {
   delete filteredUser.upiPin;
 
   // Create and send auth token
-  const token = createToken({ userID: isUser._id });
+  const token = createToken({ userId: isUser._id });
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

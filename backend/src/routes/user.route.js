@@ -5,30 +5,38 @@ const authMiddleware = require("../middleware/authMiddleware");
 const UserController = require("../controllers/user.controller");
 const userValidator = require("../middleware/userValidator");
 
-route.get("/profile", authMiddleware, UserController.userProfile);
+route.get(
+  "/profile",
+  authMiddleware.userAuthMiddleware,
+  UserController.userProfile
+);
 route.put(
   "/update",
   userValidator.validateUpdateUser,
-  authMiddleware,
+  authMiddleware.userAuthMiddleware,
   UserController.updateUser
 );
 route.put(
   "/update-pass",
   userValidator.validateUpdatePass,
-  authMiddleware,
+  authMiddleware.userAuthMiddleware,
   UserController.updatePass
 );
 route.put(
   "/update-pin",
   userValidator.validateUpdatePin,
-  authMiddleware,
+  authMiddleware.userAuthMiddleware,
   UserController.updateUpiPin
 );
-route.delete("/delete", authMiddleware, UserController.deleteUser);
+route.delete(
+  "/delete",
+  authMiddleware.userAuthMiddleware,
+  UserController.deleteUser
+);
 route.get(
   "/search",
   userValidator.validateSearchQuery,
-  authMiddleware,
+  authMiddleware.userAuthMiddleware,
   UserController.search
 );
 

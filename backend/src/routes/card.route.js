@@ -8,14 +8,18 @@ const cardValidator = require("../middleware/cardValidator");
 route.post(
   "/register-card",
   cardValidator.registerCardValidator,
-  authMiddleware,
+  authMiddleware.userAuthMiddleware,
   CardController.registerCard
 );
-route.get("/get-cards", authMiddleware, CardController.getCards);
+route.get(
+  "/get-cards",
+  authMiddleware.userAuthMiddleware,
+  CardController.getCards
+);
 route.delete(
   "/delete-card",
   cardValidator.deleteCardValidator,
-  authMiddleware,
+  authMiddleware.userAuthMiddleware,
   CardController.deleteCard
 );
 

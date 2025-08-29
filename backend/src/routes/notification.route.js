@@ -10,17 +10,21 @@ const {
   deleteNotification,
 } = require("../controllers/notification.controller");
 
-route.get("/get-notifications", authMiddleware, getNotifications);
+route.get(
+  "/get-notifications",
+  authMiddleware.userAuthMiddleware,
+  getNotifications
+);
 route.put(
   "/mark-as-read",
   query("query").notEmpty().withMessage("Notification ID is required"),
-  authMiddleware,
+  authMiddleware.userAuthMiddleware,
   markAsRead
 );
 route.delete(
   "/delete-notification",
   query("query").notEmpty().withMessage("Notification ID is required"),
-  authMiddleware,
+  authMiddleware.userAuthMiddleware,
   deleteNotification
 );
 

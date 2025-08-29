@@ -115,7 +115,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
 
   const notify = await NotificationModel.insertMany([
     {
-      userID: isPayee._id,
+      userId: isPayee._id,
       type: "transaction",
       action: "credit",
       message: `You have received ₹${amount} from ${user.fullname}`,
@@ -129,7 +129,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
       balance: isPayee.walletBalance,
     },
     {
-      userID: user._id,
+      userId: user._id,
       type: "transaction",
       action: "debit",
       message: `You sent ₹${amount} to ${isPayee.fullname}`,
@@ -170,7 +170,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
   const { id, method, pin, cardID, amount, validity } = req.body;
 
   const isBill = await BillModel.findOne({
-    $and: [{ userID: user._id }, { UId: id }],
+    $and: [{ userId: user._id }, { UId: id }],
   });
 
   if (!isBill) {
@@ -254,7 +254,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
   await Promise.all([user.save(), isBill.save()]);
 
   const notify = await NotificationModel.create({
-    userID: user._id,
+    userId: user._id,
     type: "bill",
     action: "debit",
     message: `Your ${
@@ -358,7 +358,7 @@ const walletRecharge = asyncHandler(async (req, res) => {
   });
 
   const notify = await NotificationModel.create({
-    userID: user._id,
+    userId: user._id,
     type: "transaction",
     action: "credit",
     message: `Your wallet has been recharged successfully.`,

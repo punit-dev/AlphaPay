@@ -3,3 +3,4 @@ backend/.env
 backend/.env.keys
 backend/.env.test
 backend/package-lock.json
+backend/seedAdmin.js

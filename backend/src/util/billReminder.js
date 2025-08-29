@@ -22,11 +22,11 @@ const sendBillReminder = async () => {
       console.log(`Bill reminder: ${bill._id}`);
       const cutoff = moment(bill.dueDate).clone().subtract(2, "days");
 
-      const user = await UserModel.findById(bill.userID);
+      const user = await UserModel.findById(bill.userId);
 
       if (dueDate.isAfter(moment()) && dueDate.diff(moment(), "days") <= 2) {
         const notify = await NotificationModel.create({
-          userID: user._id,
+          userId: user._id,
           type: "bill",
           action: "due",
           message: `Your ${bill.nickname || bill.category} bill is due soon.`,

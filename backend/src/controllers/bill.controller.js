@@ -22,7 +22,7 @@ const registerBill = asyncHandler(async (req, res) => {
 
   // Check bill exists or not
   const isBillExists = await BillModel.findOne({
-    $and: [{ userID: user._id }, { UId }],
+    $and: [{ userId: user._id }, { UId }],
   });
   if (isBillExists) {
     res.status(400);
@@ -31,7 +31,7 @@ const registerBill = asyncHandler(async (req, res) => {
 
   //register a new bill
   const newBill = await BillModel.create({
-    userID: user._id,
+    userId: user._id,
     category: category,
     provider: provider,
     UIdType: UIdType,
@@ -50,7 +50,7 @@ const registerBill = asyncHandler(async (req, res) => {
  */
 const getBills = asyncHandler(async (req, res) => {
   const user = req.user;
-  const bills = await BillModel.find({ userID: user._id }).sort({
+  const bills = await BillModel.find({ userId: user._id }).sort({
     updatedAt: -1,
   });
 
@@ -80,7 +80,7 @@ const updateBill = asyncHandler(async (req, res) => {
   const { query } = req.query;
 
   const bill = await BillModel.findOne({
-    $and: [{ UId: query }, { userID: user._id }],
+    $and: [{ UId: query }, { userId: user._id }],
   });
   if (!bill) {
     res.status(404);
@@ -119,7 +119,7 @@ const deleteBill = asyncHandler(async (req, res) => {
   const user = req.user;
   const { query } = req.query;
   const bill = await BillModel.findOneAndDelete({
-    $and: [{ UId: query }, { userID: user._id }],
+    $and: [{ UId: query }, { userId: user._id }],
   });
 
   if (!bill) {

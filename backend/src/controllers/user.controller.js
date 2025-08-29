@@ -144,9 +144,9 @@ const deleteUser = asyncHandler(async (req, res) => {
       $or: [{ payee: user._id }, { payer: user._id }],
     }),
     CardModel.deleteMany({
-      userID: user._id,
+      userId: user._id,
     }),
-    BillModel.deleteMany({ userID: user._id }),
+    BillModel.deleteMany({ userId: user._id }),
   ]);
   res.clearCookie("token", {
     httpOnly: true,

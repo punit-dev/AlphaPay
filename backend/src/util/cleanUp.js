@@ -38,7 +38,7 @@ const cleanUp = async () => {
         TransactionModel.deleteMany({ userId: user._id }),
         BillModel.deleteMany({ userId: user._id }),
         CardModel.deleteMany({ userId: user._id }),
-        NotificationModel.deleteMany({ userID: user._id }),
+        NotificationModel.deleteMany({ userId: user._id }),
       ]);
     }
 

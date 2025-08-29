@@ -10,6 +10,7 @@ const tranRoute = require("./routes/transaction.route");
 const billRoute = require("./routes/bill.route");
 const cardRoute = require("./routes/card.route");
 const notificationRoute = require("./routes/notification.route");
+const reviewRoute = require("./routes/review.route");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
@@ -74,6 +75,7 @@ app.use("/api/transactions", tranRoute);
 app.use("/api/bills", billRoute);
 app.use("/api/cards", cardRoute);
 app.use("/api/notifications", notificationRoute);
+app.use("/api/reviews", reviewRoute);
 
 app.use(errorHandler);
 

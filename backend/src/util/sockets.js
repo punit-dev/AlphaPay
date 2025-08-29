@@ -15,12 +15,12 @@ const initializeSocket = (server) => {
   io.on("connection", (socket) => {
     console.log("a user connected: ", socket.id);
 
-    socket.on("add", async (userID) => {
-      console.log(userID);
+    socket.on("add", async (userId) => {
+      console.log(userId);
 
       try {
-        await UserModel.findByIdAndUpdate(userID, { socketID: socket.id });
-        console.log("User added to socket: ", userID);
+        await UserModel.findByIdAndUpdate(userId, { socketID: socket.id });
+        console.log("User added to socket: ", userId);
       } catch (err) {
         console.error("Error adding user to socket:", err);
       }

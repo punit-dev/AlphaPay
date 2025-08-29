@@ -19,12 +19,11 @@ const createAdmin = async () => {
       username: "alphapay_admin",
       fullname: "AlphaPay Admin",
       password: "Alpha@123",
-      email: "admin@alphapay.com",
+      email: "alphapay_admin@gmail.com",
       phoneNumber: "9999999999",
       isVerifiedEmail: true,
       isVerifiedPhoneNumber: true,
       dateOfBirth: new Date("1990-01-01"),
-      '',
       isAdmin: true,
     });
 
