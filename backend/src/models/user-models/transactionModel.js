@@ -83,6 +83,13 @@ TransactionSchema.plugin(encrypt, {
   ],
 });
 
+mongoose.set("toJSON", {
+  transform: (doc, ret) => {
+    delete ret.__v;
+    return ret;
+  },
+});
+
 const TransactionModel = mongoose.model("transaction", TransactionSchema);
 
 module.exports = TransactionModel;

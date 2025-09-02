@@ -1,13 +1,13 @@
-const TransactionModel = require("../models/transactionModel");
-const UserModel = require("../models/userModel");
-const BillModel = require("../models/billModel");
-const CardModel = require("../models/cardModel");
-const NotificationModel = require("../models/notificationModel");
+const TransactionModel = require("../../models/user-models/transactionModel");
+const UserModel = require("../../models/user-models/userModel");
+const BillModel = require("../../models/user-models/billModel");
+const CardModel = require("../../models/user-models/cardModel");
+const NotificationModel = require("../../models/user-models/notificationModel");
 
 const asyncHandler = require("express-async-handler");
-const { comparePass } = require("../util/hash");
-const checkValidation = require("../util/checkValidation");
-const { sendData } = require("../util/sockets");
+const { comparePass } = require("../../util/hash");
+const checkValidation = require("../../util/checkValidation");
+const { sendData } = require("../../util/sockets");
 
 /**
  * @route   POST /api/transactions/userToUser

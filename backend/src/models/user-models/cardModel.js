@@ -40,6 +40,13 @@ CardSchema.plugin(encrypt, {
   encryptedFields: ["cardNumber", "CVV", "expiryDate"],
 });
 
+mongoose.set("toJSON", {
+  transform: (doc, ret) => {
+    delete ret.__v;
+    return ret;
+  },
+});
+
 const CardModel = mongoose.model("card", CardSchema);
 
 module.exports = CardModel;

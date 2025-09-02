@@ -1,6 +1,6 @@
-const NotificationModel = require("../models/notificationModel");
+const NotificationModel = require("../../models/user-models/notificationModel");
 const asyncHandler = require("express-async-handler");
-const checkValidation = require("../util/checkValidation");
+const checkValidation = require("../../util/checkValidation");
 
 /**
  * @route   GET /api/notifications/get-notifications

@@ -1,7 +1,7 @@
-const BillModel = require("../models/billModel");
+const BillModel = require("../../models/user-models/billModel");
 
 const asyncHandler = require("express-async-handler");
-const checkValidation = require("../util/checkValidation");
+const checkValidation = require("../../util/checkValidation");
 
 /**
  * @route   POST /api/bills/registerBill

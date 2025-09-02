@@ -1,8 +1,8 @@
-const CardModel = require("../models/cardModel");
+const CardModel = require("../../models/user-models/cardModel");
 
 const asyncHandler = require("express-async-handler");
-const checkValidation = require("../util/checkValidation");
-const isDateExpired = require("../util/dateCheck");
+const checkValidation = require("../../util/checkValidation");
+const isDateExpired = require("../../util/dateCheck");
 
 /**
  * @route   POST /api/cards/registerCard

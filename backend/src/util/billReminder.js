@@ -9,9 +9,9 @@
 // ------------------------------
 
 const moment = require("moment");
-const UserModel = require("../models/userModel");
-const BillModel = require("../models/billModel");
-const NotificationModel = require("../models/notificationModel");
+const UserModel = require("../models/user-models/userModel");
+const BillModel = require("../models/user-models/billModel");
+const NotificationModel = require("../models/user-models/notificationModel");
 const { sendData } = require("./sockets");
 
 const sendBillReminder = async () => {

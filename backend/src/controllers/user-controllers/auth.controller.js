@@ -1,11 +1,11 @@
 //Imports
-const UserModel = require("../models/userModel");
+const UserModel = require("../../models/user-models/userModel");
 const asyncHandler = require("express-async-handler");
-const generateOTP = require("../util/generateOTP");
-const mailer = require("../util/mailer");
-const { createToken, verifyToken } = require("../util/token");
-const { comparePass } = require("../util/hash");
-const checkValidation = require("../util/checkValidation");
+const generateOTP = require("../../util/generateOTP");
+const mailer = require("../../util/mailer");
+const { createToken, verifyToken } = require("../../util/token");
+const { comparePass } = require("../../util/hash");
+const checkValidation = require("../../util/checkValidation");
 
 /**
  * @route   POST /api/auth/register

@@ -31,6 +31,13 @@ const notificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+mongoose.set("toJSON", {
+  transform: (doc, ret) => {
+    delete ret.__v;
+    return ret;
+  },
+});
+
 const notificationModel = mongoose.model("notification", notificationSchema);
 
 module.exports = notificationModel;

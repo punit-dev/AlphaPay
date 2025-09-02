@@ -1,13 +1,13 @@
 const asyncHandler = require("express-async-handler");
-const { comparePass } = require("../util/hash");
-const UserModel = require("../models/userModel");
-const TransactionModel = require("../models/transactionModel");
-const CardModel = require("../models/cardModel");
-const BillModel = require("../models/billModel");
-const checkValidation = require("../util/checkValidation");
-const generateOTP = require("../util/generateOTP");
-const { createToken } = require("../util/token");
-const mailer = require("../util/mailer");
+const { comparePass } = require("../../util/hash");
+const UserModel = require("../../models/user-models/userModel");
+const TransactionModel = require("../../models/user-models/transactionModel");
+const CardModel = require("../../models/user-models/cardModel");
+const BillModel = require("../../models/user-models/billModel");
+const checkValidation = require("../../util/checkValidation");
+const generateOTP = require("../../util/generateOTP");
+const { createToken } = require("../../util/token");
+const mailer = require("../../util/mailer");
 
 /**
  * @route   GET /api/users/profile

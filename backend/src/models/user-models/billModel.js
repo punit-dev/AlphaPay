@@ -39,6 +39,13 @@ const BillSchema = new mongoose.Schema({
   },
 });
 
+mongoose.set("toJSON", {
+  transform: (doc, ret) => {
+    delete ret.__v;
+    return ret;
+  },
+});
+
 const BillModel = mongoose.model("bill", BillSchema);
 
 module.exports = BillModel;

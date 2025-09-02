@@ -1,9 +1,9 @@
 const express = require("express");
 const route = express.Router();
 
-const AuthController = require("../controllers/auth.controller");
-const authMiddleware = require("../middleware/authMiddleware");
-const authValidator = require("../middleware/authValidator");
+const AuthController = require("../../controllers/user-controllers/auth.controller");
+const authMiddleware = require("../../middleware/user-middleware/authMiddleware");
+const authValidator = require("../../middleware/user-middleware/authValidator");
 
 route.post(
   "/register",
@@ -17,6 +17,6 @@ route.post(
   AuthController.resendOTP
 );
 route.post("/login", authValidator.validateLogin, AuthController.login);
-route.post("/logout", authMiddleware.userAuthMiddleware, AuthController.logout);
+route.post("/logout", authMiddleware, AuthController.logout);
 
 module.exports = route;

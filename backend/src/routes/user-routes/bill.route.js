@@ -1,31 +1,27 @@
 const express = require("express");
 const route = express.Router();
 
-const BillController = require("../controllers/bill.controller");
-const authMiddleware = require("../middleware/authMiddleware");
-const billValidator = require("../middleware/billValidator");
+const BillController = require("../../controllers/user-controllers/bill.controller");
+const authMiddleware = require("../../middleware/user-middleware/authMiddleware");
+const billValidator = require("../../middleware/user-middleware/billValidator");
 
 route.post(
   "/register-bill",
   billValidator.registerBillValidator,
-  authMiddleware.userAuthMiddleware,
+  authMiddleware,
   BillController.registerBill
 );
-route.get(
-  "/get-bills",
-  authMiddleware.userAuthMiddleware,
-  BillController.getBills
-);
+route.get("/get-bills", authMiddleware, BillController.getBills);
 route.put(
   "/update-bill",
   billValidator.updateBillValidator,
-  authMiddleware.userAuthMiddleware,
+  authMiddleware,
   BillController.updateBill
 );
 route.delete(
   "/delete-bill",
   billValidator.deleteBillValidator,
-  authMiddleware.userAuthMiddleware,
+  authMiddleware,
   BillController.deleteBill
 );
 

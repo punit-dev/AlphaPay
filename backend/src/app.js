@@ -3,14 +3,13 @@ const app = express();
 
 const cookieParser = require("cookie-parser");
 
-const errorHandler = require("./middleware/errorHandler");
-const authRoute = require("./routes/auth.route");
-const userRoute = require("./routes/user.route");
-const tranRoute = require("./routes/transaction.route");
-const billRoute = require("./routes/bill.route");
-const cardRoute = require("./routes/card.route");
-const notificationRoute = require("./routes/notification.route");
-const reviewRoute = require("./routes/review.route");
+const errorHandler = require("./middleware/user-middleware/errorHandler");
+const authRoute = require("./routes/user-routes/auth.route");
+const userRoute = require("./routes/user-routes/user.route");
+const tranRoute = require("./routes/user-routes/transaction.route");
+const billRoute = require("./routes/user-routes/bill.route");
+const cardRoute = require("./routes/user-routes/card.route");
+const notificationRoute = require("./routes/user-routes/notification.route");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
@@ -75,7 +74,6 @@ app.use("/api/transactions", tranRoute);
 app.use("/api/bills", billRoute);
 app.use("/api/cards", cardRoute);
 app.use("/api/notifications", notificationRoute);
-app.use("/api/reviews", reviewRoute);
 
 app.use(errorHandler);
 

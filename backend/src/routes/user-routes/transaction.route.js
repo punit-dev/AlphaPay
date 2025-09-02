@@ -1,37 +1,33 @@
 const express = require("express");
 const route = express.Router();
 
-const authMiddleware = require("../middleware/authMiddleware");
-const TranController = require("../controllers/transaction.controller");
-const tranValidator = require("../middleware/transactionValidator");
+const authMiddleware = require("../../middleware/user-middleware/authMiddleware");
+const TranController = require("../../controllers/user-controllers/transaction.controller");
+const tranValidator = require("../../middleware/user-middleware/transactionValidator");
 
 route.post(
   "/user-to-user",
   tranValidator.userToUserValidator,
-  authMiddleware.userAuthMiddleware,
+  authMiddleware,
   TranController.newUserToUserTransaction
 );
 route.post(
   "/user-to-bill",
   tranValidator.userToBillValidator,
-  authMiddleware.userAuthMiddleware,
+  authMiddleware,
   TranController.newUserToBillTransaction
 );
 route.post(
   "/wallet-recharge",
   tranValidator.walletRechargeValidator,
-  authMiddleware.userAuthMiddleware,
+  authMiddleware,
   TranController.walletRecharge
 );
 route.get(
   "/verify-transaction",
-  authMiddleware.userAuthMiddleware,
+  authMiddleware,
   TranController.verifyTransaction
 );
-route.get(
-  "/all-transaction",
-  authMiddleware.userAuthMiddleware,
-  TranController.getTransaction
-);
+route.get("/all-transaction", authMiddleware, TranController.getTransaction);
 
 module.exports = route;
