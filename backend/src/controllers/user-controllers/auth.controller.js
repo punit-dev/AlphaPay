@@ -178,6 +178,11 @@ const login = asyncHandler(async (req, res) => {
     throw new Error("Incorrect username and password");
   }
 
+  if (isUser.isBlocked) {
+    res.status(403);
+    throw new Error("Your account is blocked.");
+  }
+
   // Make sure email is verified
   if (!isUser.isVerifiedEmail && process.env.NODE_ENV === "production") {
     res.status(400);

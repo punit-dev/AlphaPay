@@ -27,7 +27,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
   const { payee, amount, pin, method, message, cardID } = req.body;
 
   const isPayee = await UserModel.findOne({ upiId: payee });
-  if (!isPayee) {
+  if (!isPayee || isPayee.isBlocked) {
     res.status(404);
     throw new Error("Payee not found");
   }
