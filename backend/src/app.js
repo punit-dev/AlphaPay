@@ -3,13 +3,21 @@ const app = express();
 
 const cookieParser = require("cookie-parser");
 
-const errorHandler = require("./middleware/user-middleware/errorHandler");
+const errorHandler = require("./middleware/errorHandler");
+
+// User routes
 const authRoute = require("./routes/user-routes/auth.route");
 const userRoute = require("./routes/user-routes/user.route");
 const tranRoute = require("./routes/user-routes/transaction.route");
 const billRoute = require("./routes/user-routes/bill.route");
 const cardRoute = require("./routes/user-routes/card.route");
 const notificationRoute = require("./routes/user-routes/notification.route");
+
+// Admin routes
+const adminAuthRoute = require("./routes/admin-routes/auth.route");
+const adminUserRoute = require("./routes/admin-routes/user.route");
+
+// Security middlewares
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
@@ -74,6 +82,9 @@ app.use("/api/transactions", tranRoute);
 app.use("/api/bills", billRoute);
 app.use("/api/cards", cardRoute);
 app.use("/api/notifications", notificationRoute);
+
+app.use("/api/admin/auth", adminAuthRoute);
+app.use("/api/admin/users", adminUserRoute);
 
 app.use(errorHandler);
 
