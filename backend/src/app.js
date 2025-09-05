@@ -16,6 +16,8 @@ const notificationRoute = require("./routes/user-routes/notification.route");
 // Admin routes
 const adminAuthRoute = require("./routes/admin-routes/auth.route");
 const adminUserRoute = require("./routes/admin-routes/user.route");
+const txnsManagementRoute = require("./routes/admin-routes/txsnManagement.route");
+const userManagementRoute = require("./routes/admin-routes/userManagement.route");
 
 // Security middlewares
 const rateLimit = require("express-rate-limit");
@@ -85,6 +87,8 @@ app.use("/api/notifications", notificationRoute);
 
 app.use("/api/admin/auth", adminAuthRoute);
 app.use("/api/admin/users", adminUserRoute);
+app.use("/api/admin/transactions", txnsManagementRoute);
+app.use("/api/admin/clients", userManagementRoute);
 
 app.use(errorHandler);
 

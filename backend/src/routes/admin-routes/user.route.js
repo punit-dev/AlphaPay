@@ -1,6 +1,6 @@
 const express = require("express");
 const route = express.Router();
-const authMiddleware = require("../../middleware/auth.middleware");
+const authMiddleware = require("../../middleware/admin-middleware/authMiddleware");
 const userValidator = require("../../middleware/admin-middleware/userValidator");
 const userController = require("../../controllers/admin-controllers/user.controller");
 
@@ -23,7 +23,7 @@ route.put(
   "/update-role",
   authMiddleware,
   userValidator.validateUpdateRole,
-  userController.updateProfile
+  userController.updateRole
 );
 
 route.put(
@@ -40,4 +40,4 @@ route.delete(
   userController.deleteUser
 );
 
-route.module.exports = route;
+module.exports = route;

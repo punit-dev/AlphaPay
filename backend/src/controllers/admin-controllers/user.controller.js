@@ -21,25 +21,19 @@ const getUsers = asyncHandler(async (req, res) => {
     throw isNotValid;
   }
 
-  const { page, limit, email, searchTerm } = req.query;
+  const { limit, email, role } = req.query;
 
   const filter = {};
 
   if (email) {
-    filter.email = { $regex: email, $options: "i" };
+    filter.email = email;
   }
 
-  if (searchTerm) {
-    filter.$or = [
-      { fullname: { $regex: searchTerm, $options: "i" } },
-      { email: { $regex: searchTerm, $options: "i" } },
-      { _id: { $regex: searchTerm, $options: "i" } },
-    ];
+  if (role) {
+    filter.role = role;
   }
 
-  const users = await AdminUserModel.find(filter)
-    .skip((page - 1) * limit)
-    .limit(limit);
+  const users = await AdminUserModel.find(filter).limit(parseInt(limit) || 10);
   return res
     .status(200)
     .json({ message: "Users retrieved successfully", users });

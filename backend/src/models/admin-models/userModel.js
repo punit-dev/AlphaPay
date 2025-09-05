@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
+const { hashPass } = require("../../util/hash");
 
 const UserSchema = new mongoose.Schema(
   {
     fullname: {
       type: String,
       required: true,
+    },
+    socketId: {
+      type: String,
+      default: null,
     },
     email: {
       type: String,
@@ -22,7 +27,7 @@ const UserSchema = new mongoose.Schema(
     },
     lastLogin: {
       type: Date,
-      default: Date.now,
+      default: null,
     },
   },
   { timestamps: true }

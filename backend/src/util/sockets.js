@@ -19,7 +19,7 @@ const initializeSocket = (server) => {
       console.log(userId);
 
       try {
-        await UserModel.findByIdAndUpdate(userId, { socketID: socket.id });
+        await UserModel.findByIdAndUpdate(userId, { socketId: socket.id });
         console.log("User added to socket: ", userId);
       } catch (err) {
         console.error("Error adding user to socket:", err);
@@ -29,8 +29,8 @@ const initializeSocket = (server) => {
     socket.on("disconnect", async () => {
       try {
         await UserModel.findOneAndUpdate(
-          { socketID: socket.id },
-          { socketID: null }
+          { socketId: socket.id },
+          { socketId: null }
         );
         console.log("user disconnected: ", socket.id);
       } catch (err) {

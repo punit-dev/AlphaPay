@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const encrypt = require("mongoose-encryption");
 
 //adding an transactionType field on payer and payee;
 const TransactionSchema = new mongoose.Schema(
@@ -65,23 +64,6 @@ const TransactionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-const encKey = process.env.ENCRYPTION_KEY;
-const sigKey = process.env.SIG_KEY;
-
-TransactionSchema.plugin(encrypt, {
-  encryptionKey: encKey,
-  signingKey: sigKey,
-  excludeFromEncryption: [
-    "_id",
-    "__v",
-    "createAt",
-    "updateAt",
-    "payee",
-    "payer",
-    "status",
-  ],
-});
 
 mongoose.set("toJSON", {
   transform: (doc, ret) => {

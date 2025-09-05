@@ -4,7 +4,7 @@ const encrypt = require("mongoose-encryption");
 
 const UserSchema = new mongoose.Schema(
   {
-    socketID: {
+    socketId: {
       type: String,
       default: null,
     },
