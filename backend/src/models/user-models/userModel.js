@@ -104,7 +104,7 @@ mongoose.set("toJSON", {
     delete ret.lastActiveAt;
     delete ret.otpToken;
     delete ret.upiPin;
-    delete ret.socketID;
+    delete ret.socketId;
     return ret;
   },
 });

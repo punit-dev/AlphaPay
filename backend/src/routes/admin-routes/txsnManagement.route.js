@@ -2,27 +2,28 @@ const express = require("express");
 const route = express.Router();
 
 const authMiddleware = require("../../middleware/admin-middleware/authMiddleware");
-const txsnManagementValidator = require("../../middleware/admin-middleware/txnsManagementValidator");
+const txnsManagementValidator = require("../../middleware/admin-middleware/txnsManagementValidator");
 const txnsManagementController = require("../../controllers/admin-controllers/txnsManagement.controller");
+const checkRole = require("../../middleware/admin-middleware/checkRole");
+
+route.use(authMiddleware);
+route.use(checkRole("admin", "superAdmin"));
 
 route.get(
   "/",
-  authMiddleware,
-  txsnManagementValidator.validateTxnsHistory,
+  txnsManagementValidator.validateTxnsHistory,
   txnsManagementController.transactionHistory
 );
 
 route.put(
   "/refund",
-  authMiddleware,
-  txsnManagementValidator.validateFund,
+  txnsManagementValidator.validateFund,
   txnsManagementController.refund
 );
 
 route.put(
   "/deduct-fund",
-  authMiddleware,
-  txsnManagementValidator.validateFund,
+  txnsManagementValidator.validateFund,
   txnsManagementController.deductFund
 );
 

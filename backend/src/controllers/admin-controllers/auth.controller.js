@@ -11,12 +11,6 @@ const { comparePass } = require("../../util/hash");
  * @access Private (superAdmin)
  */
 const register = asyncHandler(async (req, res) => {
-  const user = req.user;
-  if (user.role != "superAdmin") {
-    res.status(403);
-    throw new Error("Only super admins can register new users");
-  }
-
   const isNotValid = validation(req);
 
   if (isNotValid) {

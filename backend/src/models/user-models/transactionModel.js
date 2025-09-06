@@ -3,20 +3,26 @@ const mongoose = require("mongoose");
 //adding an transactionType field on payer and payee;
 const TransactionSchema = new mongoose.Schema(
   {
+    initiatedBy: {
+      type: String,
+      enum: ["USER", "ADMIN"],
+      default: "USER",
+    },
+
     payer: {
-      userRef: { type: mongoose.Types.ObjectId, required: true, ref: "user" },
+      userRef: { type: mongoose.Types.ObjectId, ref: "user" },
       transactionType: {
         type: String,
         enum: ["CREDIT", "DEBIT"],
-        required: true,
       },
     },
+
     payee: {
       name: String,
       type: {
         type: String,
         enum: ["user", "bill", "wallet"],
-        required: true,
+        default: "wallet",
       },
       userRef: {
         type: mongoose.Schema.Types.ObjectId,
@@ -34,16 +40,29 @@ const TransactionSchema = new mongoose.Schema(
       },
       accountOrPhone: String,
     },
+
+    category: {
+      type: String,
+      enum: [
+        "TRANSFER", // normal user transfer
+        "REFUND", // admin refund
+        "DEDUCTION", // admin deduction
+        "PAYMENT", // bill payment
+        "TOPUP", // wallet top-up
+      ],
+      default: "TRANSFER",
+    },
+
     amount: {
       type: Number,
-      default: 0,
+      min: 1,
       require: true,
     },
     method: {
       type: {
         type: String,
         enum: ["wallet", "card"],
-        required: true,
+        default: "wallet",
       },
       cardRef: {
         type: mongoose.Schema.Types.ObjectId,
@@ -58,7 +77,7 @@ const TransactionSchema = new mongoose.Schema(
     },
     message: {
       type: String,
-      default: "Paid",
+      default: "Transaction completed",
       trim: true,
     },
   },

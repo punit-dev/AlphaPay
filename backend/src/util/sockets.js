@@ -40,9 +40,9 @@ const initializeSocket = (server) => {
   });
 };
 
-const sendData = (socketID, eventName, message) => {
+const sendData = (socketId, eventName, message) => {
   if (io) {
-    io.to(socketID).emit(eventName, message);
+    io.to(socketId).emit(eventName, message);
   } else {
     console.log("Socket.io is not initialized.");
   }

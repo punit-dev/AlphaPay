@@ -1,5 +1,8 @@
 const UserModel = require("../../models/user-models/userModel");
 const TransactionModel = require("../../models/user-models/transactionModel");
+const NotificationModel = require("../../models/user-models/notificationModel");
+const BillModel = require("../../models/user-models/billModel");
+const CardModel = require("../../models/user-models/cardModel");
 const asyncHandler = require("express-async-handler");
 const validation = require("../../util/checkValidation");
 const moment = require("moment");
@@ -10,20 +13,13 @@ const moment = require("moment");
  * @access Admin, SuperAdmin
  */
 const getAllUsers = asyncHandler(async (req, res) => {
-  const user = req.user;
-
-  if (user.role !== "admin" && user.role !== "superAdmin") {
-    res.status(403);
-    throw new Error("Access denied");
-  }
-
   const isNotValid = validation(req);
   if (isNotValid) {
     res.status(400);
     throw isNotValid;
   }
 
-  const { blocked, gtWallet, ltWallet, lastActive, limit } = req.query;
+  const { blocked, gtWallet, ltWallet, lastActive, limit, page } = req.query;
 
   const filter = {};
 
@@ -49,10 +45,24 @@ const getAllUsers = asyncHandler(async (req, res) => {
     };
   }
 
+  const skip = ((parseInt(page) || 1) - 1) * limit;
+
   const users = await UserModel.find(filter)
     .sort({ createdAt: -1 })
-    .limit(limit || 50);
-  res.status(200).json(users);
+    .limit(parseInt(limit) || 50)
+    .skip(skip);
+  const total = await UserModel.countDocuments(filter);
+
+  res.status(200).json({
+    users,
+    pagination: {
+      total,
+      page: parseInt(page) || 1,
+      pages: Math.ceil(total / limit),
+      next: page < Math.ceil(total / limit) ? parseInt(page) + 1 : null,
+      prev: page > 1 ? page - 1 : null,
+    },
+  });
 });
 
 /**
@@ -61,18 +71,13 @@ const getAllUsers = asyncHandler(async (req, res) => {
  * @access Admin, SuperAdmin
  */
 const getUserByIdWithTransactions = asyncHandler(async (req, res) => {
-  const adm = req.user;
-  if (adm.role != "admin" && adm.role != "superAdmin") {
-    res.status(403);
-    throw new Error("Access denied");
-  }
   const isNotValid = validation(req);
   if (isNotValid) {
     res.status(400);
     throw isNotValid;
   }
 
-  const { userId, limit, status, method, gta, lta } = req.query;
+  const { userId, limit, status, method, gta, lta, page } = req.query;
 
   const user = await UserModel.findById(userId);
   if (!user) {
@@ -89,7 +94,7 @@ const getUserByIdWithTransactions = asyncHandler(async (req, res) => {
   }
 
   if (method != undefined) {
-    filter.method = { type: method.toLowerCase() };
+    filter["method.type"] = method.toLowerCase();
   }
 
   if (gta != undefined) {
@@ -100,12 +105,29 @@ const getUserByIdWithTransactions = asyncHandler(async (req, res) => {
     filter.amount = { ...filter.amount, $lte: parseFloat(lta) };
   }
 
-  console.log(filter);
+  const skip = ((parseInt(page) || 1) - 1) * limit;
 
   const transactions = await TransactionModel.find(filter)
     .sort({ createdAt: -1 })
-    .limit(limit || 50);
-  res.status(200).json({ user, transactions });
+    .limit(parseInt(limit) || 50)
+    .skip(skip);
+  const total = await TransactionModel.countDocuments(filter);
+
+  if (!transactions) {
+    res.status(404);
+    throw new Error("Transactions not found for this user");
+  }
+  res.status(200).json({
+    user,
+    transactions,
+    txnsPagination: {
+      total,
+      page: parseInt(page) || 1,
+      pages: Math.ceil(total / limit),
+      next: page < Math.ceil(total / limit) ? parseInt(page) + 1 : null,
+      prev: page > 1 ? page - 1 : null,
+    },
+  });
 });
 
 /**
@@ -118,12 +140,6 @@ const blockUser = asyncHandler(async (req, res) => {
   if (isNotValid) {
     res.status(400);
     throw isNotValid;
-  }
-
-  const adm = req.user;
-  if (adm.role !== "admin" && adm.role !== "superAdmin") {
-    res.status(403);
-    throw new Error("Access denied");
   }
 
   const { userId } = req.query;
@@ -152,12 +168,6 @@ const unblockUser = asyncHandler(async (req, res) => {
     throw isNotValid;
   }
 
-  const adm = req.user;
-  if (adm.role !== "admin" && adm.role != "superAdmin") {
-    res.status(403);
-    throw new Error("Access denied");
-  }
-
   const { userId } = req.query;
 
   const user = await UserModel.findByIdAndUpdate(userId, { isBlocked: false });
@@ -172,9 +182,44 @@ const unblockUser = asyncHandler(async (req, res) => {
     .json({ message: "User blocked Successfully", updatedUser: user });
 });
 
+/**
+ * @route DELETE /api/admin/clients/delete-user?userId=
+ * @desc Delete a user and all associated data
+ * @access Admin, SuperAdmin
+ */
+const deleteUser = asyncHandler(async (req, res) => {
+  const isNotValid = validation(req);
+  if (isNotValid) {
+    res.status(400);
+    throw isNotValid;
+  }
+
+  const userId = req.query.userId;
+
+  const deletedUser = await UserModel.findByIdAndDelete(userId);
+  if (!deletedUser) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  await Promise.all([
+    TransactionModel.deleteMany({
+      $or: [{ "payer.userRef": userId }, { "payee.userRef": userId }],
+    }),
+    NotificationModel.deleteMany({ userId }),
+    CardModel.deleteMany({ userId }),
+    BillModel.deleteMany({ userId }),
+  ]);
+
+  return res
+    .status(200)
+    .json({ message: "User delete successfully", userId: deletedUser._id });
+});
+
 module.exports = {
   getAllUsers,
   getUserByIdWithTransactions,
   blockUser,
   unblockUser,
+  deleteUser,
 };

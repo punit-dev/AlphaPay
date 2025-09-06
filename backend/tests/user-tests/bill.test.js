@@ -1,7 +1,7 @@
 require("@dotenvx/dotenvx").config({ path: ".env.test" });
 const request = require("supertest");
-const BillModel = require("../../src/models/billModel");
-const UserModel = require("../../src/models/userModel");
+const BillModel = require("../../src/models/user-models/billModel");
+const UserModel = require("../../src/models/user-models/userModel");
 const app = require("../../src/app");
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");

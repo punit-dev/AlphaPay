@@ -20,7 +20,7 @@ const adminAuthMiddleware = asyncHandler(async (req, res, next) => {
   const user = await AdminUserModel.findById(verify.userId);
   if (!user) {
     res.status(404);
-    throw new Error("User not found");
+    throw new Error("Invalid token user.");
   }
 
   req.user = user;

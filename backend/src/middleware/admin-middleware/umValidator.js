@@ -41,6 +41,6 @@ exports.validateUserByIdWithTransactions = [
     .withMessage("Invalid less than amount"),
 ];
 
-exports.validateBlockUnblockUser = [
+exports.validateBlockUnblockDeleteUser = [
   query("userId").isMongoId().withMessage("Invalid user ID"),
 ];

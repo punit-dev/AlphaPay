@@ -4,33 +4,39 @@ const route = express.Router();
 const authMiddleware = require("../../middleware/admin-middleware/authMiddleware");
 const userManagementValidator = require("../../middleware/admin-middleware/umValidator");
 const userManagementController = require("../../controllers/admin-controllers/userManagement.controller");
+const checkRole = require("../../middleware/admin-middleware/checkRole");
+
+route.use(authMiddleware);
+route.use(checkRole("admin", "superAdmin"));
 
 route.get(
   "/",
-  authMiddleware,
   userManagementValidator.validateGetAllUsers,
   userManagementController.getAllUsers
 );
 
 route.get(
   "/transactions",
-  authMiddleware,
   userManagementValidator.validateUserByIdWithTransactions,
   userManagementController.getUserByIdWithTransactions
 );
 
 route.put(
   "/block",
-  authMiddleware,
-  userManagementValidator.validateBlockUnblockUser,
+  userManagementValidator.validateBlockUnblockDeleteUser,
   userManagementController.blockUser
 );
 
 route.put(
   "/unblock",
-  authMiddleware,
-  userManagementValidator.validateBlockUnblockUser,
+  userManagementValidator.validateBlockUnblockDeleteUser,
   userManagementController.unblockUser
+);
+
+route.delete(
+  "/delete-user",
+  userManagementValidator.validateBlockUnblockDeleteUser,
+  userManagementController.deleteUser
 );
 
 module.exports = route;

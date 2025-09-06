@@ -58,6 +58,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
   // Validate UPI Pin
   if (!(await comparePass(user.upiPin, pin))) {
     const failedTran = await TransactionModel.create({
+      initiatedBy: "USER",
       payer: {
         userRef: user._id,
         transactionType: "DEBIT",
@@ -75,6 +76,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
         cardRef: method == "card" ? isCard._id : null,
       },
       status: "FAILED",
+      category: "TRANSFER",
       message: "Transaction failed.",
     });
 
@@ -84,6 +86,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
 
   // SUCCESS Transaction
   const successTran = await TransactionModel.create({
+    initiatedBy: "USER",
     payer: {
       userRef: user._id,
       transactionType: "DEBIT",
@@ -101,6 +104,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
     },
     status: "SUCCESS",
     message: message || "Paid",
+    category: "TRANSFER",
   });
 
   // Deduct wallet amount if wallet used
@@ -145,8 +149,8 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
   ]);
 
   //push a success transaction notification
-  sendData(isPayee.socketID, "tran", notify[0]);
-  sendData(user.socketID, "tran", notify[1]);
+  sendData(isPayee.socketId, "tran", notify[0]);
+  sendData(user.socketId, "tran", notify[1]);
 
   return res.status(201).json({
     message: "Transaction successfully completed.",
@@ -198,6 +202,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
 
   if (!(await comparePass(user.upiPin, pin))) {
     const failedTran = await TransactionModel.create({
+      initiatedBy: "USER",
       payer: {
         userRef: user._id,
         transactionType: "DEBIT",
@@ -214,6 +219,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
         cardRef: method == "card" ? isCard._id : null,
       },
       status: "FAILED",
+      category: "PAYMENT",
       message: "Transaction failed.",
     });
 
@@ -222,6 +228,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
   }
 
   const successTran = await TransactionModel.create({
+    initiatedBy: "USER",
     payer: {
       userRef: user._id,
       transactionType: "DEBIT",
@@ -238,6 +245,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
       cardRef: method == "card" ? isCard._id : null,
     },
     status: "SUCCESS",
+    category: "PAYMENT",
     message: "Bill paid",
   });
 
@@ -269,7 +277,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
     },
     balance: user.walletBalance,
   });
-  sendData(user.socketID, "tran", notify);
+  sendData(user.socketId, "tran", notify);
 
   return res
     .status(201)
@@ -307,6 +315,7 @@ const walletRecharge = asyncHandler(async (req, res) => {
   // Validate UPI Pin
   if (!(await comparePass(user.upiPin, upiPin))) {
     const failedTran = await TransactionModel.create({
+      initiatedBy: "USER",
       payer: {
         userRef: user._id,
         transactionType: "DEBIT",
@@ -324,6 +333,7 @@ const walletRecharge = asyncHandler(async (req, res) => {
         cardRef: card._id,
       },
       status: "FAILED",
+      category: "TOPUP",
       message: "Transaction failed.",
     });
 
@@ -337,6 +347,7 @@ const walletRecharge = asyncHandler(async (req, res) => {
 
   // SUCCESS transaction
   const successTran = await TransactionModel.create({
+    initiatedBy: "USER",
     payer: {
       userRef: user._id,
       transactionType: "DEBIT",
@@ -354,6 +365,7 @@ const walletRecharge = asyncHandler(async (req, res) => {
       cardRef: card._id,
     },
     status: "SUCCESS",
+    category: "TOPUP",
     message: "Money added to wallet",
   });
 
@@ -371,7 +383,7 @@ const walletRecharge = asyncHandler(async (req, res) => {
     },
     balance: user.walletBalance,
   });
-  sendData(user.socketID, "tran", notify);
+  sendData(user.socketId, "tran", notify);
 
   return res.status(201).json({
     message: "Money successfully add to you wallet.",

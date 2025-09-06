@@ -3,39 +3,40 @@ const route = express.Router();
 const authMiddleware = require("../../middleware/admin-middleware/authMiddleware");
 const userValidator = require("../../middleware/admin-middleware/userValidator");
 const userController = require("../../controllers/admin-controllers/user.controller");
+const checkRole = require("../../middleware/admin-middleware/checkRole");
+
+route.use(authMiddleware);
 
 route.get(
   "/",
-  authMiddleware,
+  checkRole("superAdmin"),
   userValidator.validateGetUsers,
   userController.getUsers
 );
-route.get("/profile", authMiddleware, userController.profile);
+route.get("/profile", userController.profile);
 
 route.put(
   "/update",
-  authMiddleware,
   userValidator.validateUpdateProfile,
   userController.updateProfile
 );
 
 route.put(
   "/update-role",
-  authMiddleware,
+  checkRole("superAdmin"),
   userValidator.validateUpdateRole,
   userController.updateRole
 );
 
 route.put(
   "/update-password",
-  authMiddleware,
   userValidator.validateUpdatePass,
   userController.updatePass
 );
 
 route.delete(
   "/delete",
-  authMiddleware,
+  checkRole("superAdmin"),
   userValidator.validateDeleteUser,
   userController.deleteUser
 );

@@ -12,19 +12,14 @@ const moment = require("moment");
  * @access Admin, SuperAdmin
  */
 const transactionHistory = asyncHandler(async (req, res) => {
-  const adm = req.user;
-  if (adm.role !== "admin" && adm.role !== "superAdmin") {
-    res.status(403);
-    throw new Error("Access denied");
-  }
-
   const isNotValid = validation(req);
   if (isNotValid) {
     res.status(400);
     throw isNotValid;
   }
 
-  const { userId, transactionId, days, status, method, gta, lta } = req.query;
+  const { userId, transactionId, days, status, method, gta, lta, page, limit } =
+    req.query;
 
   const filter = {};
   if (userId != undefined) {
@@ -50,22 +45,35 @@ const transactionHistory = asyncHandler(async (req, res) => {
     filter.amount = { ...filter.amount, $lte: parseInt(lta) };
   }
 
+  const skip = ((parseInt(page) || 1) - 1) * limit;
+
   const transactions = await TransactionModel.find(filter)
     .populate([
       { path: "payee.userRef", select: "upiId fullname" },
       { path: "payer.userRef", select: "upiId fullname" },
     ])
     .sort({ createdAt: -1 })
-    .limit(50);
+    .limit(parseInt(limit) || 50)
+    .skip(skip);
+
+  const total = await TransactionModel.countDocuments(filter);
 
   if (!transactions) {
     res.status(404);
     throw new Error("Transaction not found.");
   }
 
-  return res
-    .status(200)
-    .json({ message: "All Wallet transaction history", transactions });
+  return res.status(200).json({
+    message: "All Wallet transaction history",
+    transactions,
+    pagination: {
+      total,
+      page: parseInt(page) || 1,
+      pages: Math.ceil(total / limit),
+      next: page < Math.ceil(total / limit) ? parseInt(page) + 1 : null,
+      prev: page > 1 ? page - 1 : null,
+    },
+  });
 });
 
 /**
@@ -74,12 +82,6 @@ const transactionHistory = asyncHandler(async (req, res) => {
  * @access Admin, SuperAdmin
  */
 const refund = asyncHandler(async (req, res) => {
-  const adm = req.user;
-  if (adm.role !== "admin" && adm.role !== "superAdmin") {
-    res.status(403);
-    throw new Error("Access denied");
-  }
-
   const isNotValid = validation(req);
   if (isNotValid) {
     res.status(400);
@@ -98,10 +100,25 @@ const refund = asyncHandler(async (req, res) => {
   user.walletBalance += fund;
   await user.save();
 
+  const transaction = await TransactionModel.create({
+    initiatedBy: "ADMIN",
+    amount: fund,
+    category: "REFUND",
+    payee: {
+      name: user.fullname,
+      type: "wallet",
+      userRef: user._id,
+      accountOrPhone: user.phoneNumber,
+      transactionType: "CREDIT",
+    },
+    status: "SUCCESS",
+  });
+
   const notify = await NotificationModel.create({
     userId: user._id,
     action: "credit",
     balance: user.walletBalance,
+    data: transaction,
     type: "transaction",
     message: `You refunded ₹${fund} to your wallet`,
   });
@@ -119,12 +136,6 @@ const refund = asyncHandler(async (req, res) => {
  * @access Admin, SuperAdmin
  */
 const deductFund = asyncHandler(async (req, res) => {
-  const adm = req.user;
-  if (adm.role !== "admin" && adm.role !== "superAdmin") {
-    res.status(403);
-    throw new Error("Access denied");
-  }
-
   const isNotValid = validation(req);
   if (isNotValid) {
     res.status(400);
@@ -140,21 +151,39 @@ const deductFund = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  user.walletBalance -= fund;
+  const actualDeduct = Math.min(fund, user.walletBalance);
+  user.walletBalance -= actualDeduct;
   await user.save();
+
+  const transaction = await TransactionModel.create({
+    initiatedBy: "ADMIN",
+    amount: actualDeduct,
+    category: "DEDUCTION",
+    payee: {
+      name: user.fullname,
+      type: "wallet",
+      userRef: user._id,
+      accountOrPhone: user.phoneNumber,
+      transactionType: "DEBIT",
+    },
+    status: "SUCCESS",
+  });
 
   const notify = await NotificationModel.create({
     userId: user._id,
     action: "debit",
     balance: user.walletBalance,
+    data: transaction,
     type: "transaction",
-    message: `You debited ₹${fund} from your wallet`,
+    message: `₹${actualDeduct} was debited from your wallet`,
   });
 
   sendData(user.socketId, "tran", notify);
 
   return res.status(200).json({
     message: "Fund deducted successfully",
+    deductedAmount: actualDeduct,
+    newBalance: user.walletBalance,
   });
 });
 

@@ -10,18 +10,13 @@ const { comparePass } = require("../../util/hash");
  * @access Private (superAdmin)
  */
 const getUsers = asyncHandler(async (req, res) => {
-  const user = req.user;
-  if (user.role !== "superAdmin") {
-    res.status(403);
-    throw new Error("Access denied");
-  }
   const isNotValid = validation(req.query);
   if (isNotValid) {
     res.status(400);
     throw isNotValid;
   }
 
-  const { limit, email, role } = req.query;
+  const { limit, email, role, page } = req.query;
 
   const filter = {};
 
@@ -33,10 +28,24 @@ const getUsers = asyncHandler(async (req, res) => {
     filter.role = role;
   }
 
-  const users = await AdminUserModel.find(filter).limit(parseInt(limit) || 10);
-  return res
-    .status(200)
-    .json({ message: "Users retrieved successfully", users });
+  const skip = ((parseInt(page) || 1) - 1) * limit;
+
+  const users = await AdminUserModel.find(filter)
+    .skip(skip)
+    .limit(parseInt(limit) || 10)
+    .sort({ createdAt: -1 });
+  const total = await AdminUserModel.countDocuments(filter);
+
+  return res.status(200).json({
+    users,
+    pagination: {
+      total,
+      page: parseInt(page) || 1,
+      pages: Math.ceil(total / limit),
+      next: page < Math.ceil(total / limit) ? parseInt(page) + 1 : null,
+      prev: page > 1 ? page - 1 : null,
+    },
+  });
 });
 
 /**
@@ -89,12 +98,6 @@ const updateRole = asyncHandler(async (req, res) => {
     throw isNotValid;
   }
 
-  const user = req.user;
-  if (user.role !== "superAdmin") {
-    res.status(403);
-    throw new Error("Access denied");
-  }
-
   const { userId, role } = req.body;
 
   const updatedUser = await AdminUserModel.findByIdAndUpdate(
@@ -136,12 +139,6 @@ const updatePass = asyncHandler(async (req, res) => {
  * @access Private (superAdmin)
  */
 const deleteUser = asyncHandler(async (req, res) => {
-  const user = req.user;
-  if (user.role !== "superAdmin") {
-    res.status(403);
-    throw new Error("Access denied");
-  }
-
   const { userId } = req.query;
 
   const deletedUser = await AdminUserModel.findByIdAndDelete(userId);

@@ -20,7 +20,6 @@ const sendBillReminder = async () => {
 
     for (const bill of bills) {
       console.log(`Bill reminder: ${bill._id}`);
-      const cutoff = moment(bill.dueDate).clone().subtract(2, "days");
 
       const user = await UserModel.findById(bill.userId);
 
@@ -37,7 +36,7 @@ const sendBillReminder = async () => {
           },
         });
 
-        sendData(user.socketID, "billReminder", notify);
+        sendData(user.socketId, "billReminder", notify);
       }
     }
   } catch (error) {
