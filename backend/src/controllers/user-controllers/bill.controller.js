@@ -4,7 +4,7 @@ const asyncHandler = require("express-async-handler");
 const checkValidation = require("../../util/checkValidation");
 
 /**
- * @route   POST /api/bills/registerBill
+ * @route   POST /api/bills/register-bill
  * @desc    Registers a new Bill
  * @access  Privet
  */
@@ -44,7 +44,7 @@ const registerBill = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   GET /api/bills/getBills
+ * @route   GET /api/bills/get-bills
  * @desc    Get all bills of the logged-in user
  * @access  Privet
  */
@@ -63,7 +63,7 @@ const getBills = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   PUT /api/bills/updateBill
+ * @route   PUT /api/bills/update-bill
  * @desc    Update specific bill of the logged-in user
  * @access  Privet
  */
@@ -104,7 +104,7 @@ const updateBill = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   DELETE /api/bills/deleteBill
+ * @route   DELETE /api/bills/delete-bill
  * @desc    Delete specific bill of the logged-in user
  * @access  Privet
  */

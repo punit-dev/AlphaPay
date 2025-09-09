@@ -13,13 +13,17 @@ const {
 route.get("/get-notifications", authMiddleware, getNotifications);
 route.put(
   "/mark-as-read",
-  query("query").notEmpty().withMessage("Notification ID is required"),
+  query("notificationId")
+    .isMongoId()
+    .withMessage("Notification ID is required"),
   authMiddleware,
   markAsRead
 );
 route.delete(
   "/delete-notification",
-  query("query").notEmpty().withMessage("Notification ID is required"),
+  query("notificationId")
+    .isMongoId()
+    .withMessage("Notification ID is required"),
   authMiddleware,
   deleteNotification
 );

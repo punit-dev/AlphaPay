@@ -10,7 +10,7 @@ const checkValidation = require("../../util/checkValidation");
 const { sendData } = require("../../util/sockets");
 
 /**
- * @route   POST /api/transactions/userToUser
+ * @route   POST /api/transactions/user-to-user
  * @desc    Transfer money from one user to another
  * @access  Private
  */
@@ -159,7 +159,7 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   POST /api/transactions/userToBill
+ * @route   POST /api/transactions/user-to-bill
  * @desc    Pay a bill using wallet or card
  * @access  Private
  */
@@ -174,7 +174,8 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
   const { id, method, pin, cardID, amount, validity } = req.body;
 
   const isBill = await BillModel.findOne({
-    $and: [{ userId: user._id }, { UId: id }],
+    userId: user._id,
+    UId: id,
   });
 
   if (!isBill) {
@@ -239,7 +240,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
       billRef: isBill._id,
       accountOrPhone: isBill.UId,
     },
-    amount: isBill.amount,
+    amount: amount,
     method: {
       type: method,
       cardRef: method == "card" ? isCard._id : null,
@@ -285,7 +286,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   POST /api/transactions/walletRecharge
+ * @route   POST /api/transactions/wallet-recharge
  * @desc    Recharge wallet using card
  * @access  Private
  */
@@ -392,7 +393,7 @@ const walletRecharge = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   GET /api/transactions/verifyTransaction?query=transactionId
+ * @route   GET /api/transactions/verify-transaction?query=transactionId
  * @desc    Verify a transaction by ID
  * @access  Private
  */
@@ -418,7 +419,7 @@ const verifyTransaction = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   GET /api/transactions/allTransaction
+ * @route   GET /api/transactions/all-transaction
  * @desc    Get all transactions of the logged-in user
  * @access  Private
  */

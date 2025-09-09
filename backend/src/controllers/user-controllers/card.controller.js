@@ -5,7 +5,7 @@ const checkValidation = require("../../util/checkValidation");
 const isDateExpired = require("../../util/dateCheck");
 
 /**
- * @route   POST /api/cards/registerCard
+ * @route   POST /api/cards/register-card
  * @desc    Registers a new Card
  * @access  Privet
  */
@@ -51,7 +51,7 @@ const registerCard = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   GET /api/cards/getCards
+ * @route   GET /api/cards/get-cards
  * @desc    Get all cards of the logged-in user
  * @access  Privet
  */
@@ -70,7 +70,7 @@ const getCards = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   DELETE /api/cards/deleteCard
+ * @route   DELETE /api/cards/delete-card
  * @desc    Delete specific card of the logged-in user
  * @access  Privet
  */

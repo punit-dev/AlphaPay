@@ -25,7 +25,7 @@ const getNotifications = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   PUT /api/notifications/mark-as-read
+ * @route   PUT /api/notifications/mark-as-read?notificationId=
  * @desc    Mark a notification as read
  * @access  Private
  */
@@ -57,7 +57,7 @@ const markAsRead = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   DELETE /api/notifications/delete-notification
+ * @route   DELETE /api/notifications/delete-notification?notificationId=
  * @desc    Delete a notification
  * @access  Private
  */

@@ -76,7 +76,7 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   PUT /api/users/updatePass
+ * @route   PUT /api/users/update-pass
  * @desc    Update the user login password
  * @access  Privet
  */
@@ -105,7 +105,7 @@ const updatePass = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   PUT /api/users/updatePin
+ * @route   PUT /api/users/update-pin
  * @desc    Update the user UPI Pin
  * @access  Privet
  */

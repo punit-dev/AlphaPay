@@ -75,7 +75,7 @@ const register = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   POST /api/auth/verifyOtp
+ * @route   POST /api/auth/verify-otp
  * @desc    Verifies the OTP and activates the user's email
  * @access  Public
  */
@@ -118,7 +118,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   POST /api/auth/resendOtp
+ * @route   POST /api/auth/resend-otp
  * @desc    Re-sends a new OTP to the user's email
  * @access  Public
  */
