@@ -5,19 +5,8 @@ const cookieParser = require("cookie-parser");
 
 const errorHandler = require("./middleware/errorHandler");
 
-// User routes
-const authRoute = require("./routes/user-routes/auth.route");
-const userRoute = require("./routes/user-routes/user.route");
-const tranRoute = require("./routes/user-routes/transaction.route");
-const billRoute = require("./routes/user-routes/bill.route");
-const cardRoute = require("./routes/user-routes/card.route");
-const notificationRoute = require("./routes/user-routes/notification.route");
-
-// Admin routes
-const adminAuthRoute = require("./routes/admin-routes/auth.route");
-const adminUserRoute = require("./routes/admin-routes/user.route");
-const txnsManagementRoute = require("./routes/admin-routes/txsnManagement.route");
-const userManagementRoute = require("./routes/admin-routes/userManagement.route");
+const userRoute = require("./routes/user-routes/index");
+const adminRoute = require("./routes/admin-routes/index");
 
 // Security middlewares
 const rateLimit = require("express-rate-limit");
@@ -67,28 +56,29 @@ app.use((req, res, next) => {
 });
 
 app.use(hpp());
-app.use(
-  cors({
-    origin: "*",
-    credentials: true,
-  })
-);
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/auth", authRoute);
-app.use("/api/users", userRoute);
-app.use("/api/transactions", tranRoute);
-app.use("/api/bills", billRoute);
-app.use("/api/cards", cardRoute);
-app.use("/api/notifications", notificationRoute);
-
-app.use("/api/admin/auth", adminAuthRoute);
-app.use("/api/admin/users", adminUserRoute);
-app.use("/api/admin/transactions", txnsManagementRoute);
-app.use("/api/admin/clients", userManagementRoute);
+app.use(
+  "/api/clients",
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+  userRoute
+);
+app.use(
+  "/api/admin",
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+  adminRoute
+);
 
 app.use(errorHandler);
 
