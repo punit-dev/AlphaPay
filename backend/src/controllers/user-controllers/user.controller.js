@@ -10,26 +10,17 @@ const { createToken } = require("../../util/token");
 const mailer = require("../../util/mailer");
 
 /**
- * @route   GET /api/users/profile
+ * @route   GET /api/clients/users/profile
  * @desc    Get user profile information
  * @access  Privet
  */
 const userProfile = asyncHandler(async (req, res) => {
   const user = req.user;
-
-  //remove all sensitive user info
-  const filteredUser = user.toObject();
-  delete filteredUser.password;
-  delete filteredUser.__v;
-  delete filteredUser.upiPin;
-  delete filteredUser.otpToken;
-  return res
-    .status(200)
-    .json({ message: "User Profile Details", user: filteredUser });
+  return res.status(200).json({ message: "User Profile Details", user });
 });
 
 /**
- * @route   PUT /api/users/update
+ * @route   PUT /api/clients/users/update
  * @desc    Update user profile
  * @access  Privet
  */
@@ -47,11 +38,21 @@ const updateUser = asyncHandler(async (req, res) => {
 
   //check is updated field are available then change if available
   if (username && username != user.username) {
+    const isExist = await UserModel.findOne({ username });
+    if (isExist) {
+      res.status(400);
+      throw new Error("Username already in use.");
+    }
     user.username = username;
     user.upiId = `${username}@alphapay`;
   }
   if (fullname) user.fullname = fullname;
   if (email && email != user.email) {
+    const isExist = await UserModel.findOne({ email });
+    if (isExist) {
+      res.status(400);
+      throw new Error("Email already in use.");
+    }
     user.email = email;
     user.isVerifiedEmail = false;
 
@@ -67,16 +68,11 @@ const updateUser = asyncHandler(async (req, res) => {
   }
   await user.save();
 
-  const filteredUser = user.toObject();
-  delete filteredUser.password;
-  delete filteredUser.__v;
-  delete filteredUser.upiPin;
-  delete filteredUser.otpToken;
-  return res.status(200).json({ message: "User Updated", user: filteredUser });
+  return res.status(200).json({ message: "User Updated", user });
 });
 
 /**
- * @route   PUT /api/users/update-pass
+ * @route   PUT /api/clients/users/update-pass
  * @desc    Update the user login password
  * @access  Privet
  */
@@ -94,7 +90,7 @@ const updatePass = asyncHandler(async (req, res) => {
   //compare the updated password to current password
   if (await comparePass(user.password, newPass)) {
     res.status(400);
-    throw new Error("This password is already set.");
+    throw new Error("New password must be different from the old password.");
   }
 
   // assign a plain newPass because it will be hashed before saving
@@ -105,7 +101,7 @@ const updatePass = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   PUT /api/users/update-pin
+ * @route   PUT /api/clients/users/update-pin
  * @desc    Update the user UPI Pin
  * @access  Privet
  */
@@ -122,7 +118,7 @@ const updateUpiPin = asyncHandler(async (req, res) => {
 
   if (user.upiPin && (await comparePass(user.upiPin, newPin))) {
     res.status(400);
-    throw new Error("This UPI Pin is already set.");
+    throw new Error("New UPI pin must be different from the old pin.");
   }
 
   // assign a plain newPin because it will be hashed before saving
@@ -132,7 +128,7 @@ const updateUpiPin = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   DELETE /api/users/delete
+ * @route   DELETE /api/clients/users/delete
  * @desc    Delete user and related data
  * @access  Privet
  */
@@ -156,7 +152,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   GET /api/users/search
+ * @route   GET /api/clients/users/search?query=
  * @desc    Search an users using upiID OR phoneNumber
  * @access  Privet
  */
@@ -181,12 +177,15 @@ const search = asyncHandler(async (req, res) => {
     ],
   }).select("-password -upiPin -__v");
 
-  if (!users.length) {
+  if (users.length == 0) {
     res.status(404);
     throw new Error("User not found");
   }
 
-  return res.status(200).json({ users });
+  return res.status(200).json({
+    message: "Search Results",
+    results: users,
+  });
 });
 
 // Export all controller functions

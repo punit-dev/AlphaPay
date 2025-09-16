@@ -8,7 +8,7 @@ const { comparePass } = require("../../util/hash");
 const checkValidation = require("../../util/checkValidation");
 
 /**
- * @route   POST /api/auth/register
+ * @route   POST /api/clients/auth/register
  * @desc    Registers a new user and sends OTP for email verification
  * @access  Public
  */
@@ -30,7 +30,7 @@ const register = asyncHandler(async (req, res) => {
 
   if (isUser) {
     res.status(400);
-    throw new Error("User already exist");
+    throw new Error("User already exists");
   }
 
   // Generate a random initial wallet balance
@@ -54,12 +54,6 @@ const register = asyncHandler(async (req, res) => {
   // Send OTP to user's email
   await mailer.sendOTP(newUser.email, otp);
 
-  const filteredUser = newUser.toObject();
-  delete filteredUser.__v;
-  delete filteredUser.password;
-  delete filteredUser.upiPin;
-  delete filteredUser.otpToken;
-
   // Create auth token after registration
   const authToken = createToken({ userId: newUser._id });
   res.cookie("token", authToken, {
@@ -68,14 +62,14 @@ const register = asyncHandler(async (req, res) => {
   });
   res.status(201).json({
     message: "User created successfully",
-    user: filteredUser,
+    user: newUser,
     authToken,
     otp: `${process.env.NODE_ENV === "test" && otp}`,
   });
 });
 
 /**
- * @route   POST /api/auth/verify-otp
+ * @route   POST /api/clients/auth/verify-otp
  * @desc    Verifies the OTP and activates the user's email
  * @access  Public
  */
@@ -108,7 +102,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
   if (otp != verify.otp) {
     return res
       .status(401)
-      .json({ message: "OTP is invalid please try again." });
+      .json({ message: "OTP expired or invalid. Please request a new one." });
   }
 
   user.otpToken = null;
@@ -118,7 +112,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   POST /api/auth/resend-otp
+ * @route   POST /api/clients/auth/resend-otp
  * @desc    Re-sends a new OTP to the user's email
  * @access  Public
  */
@@ -155,7 +149,7 @@ const resendOTP = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   POST /api/auth/login
+ * @route   POST /api/clients/auth/login
  * @desc    Logs in the user using email/username and password
  * @access  Public
  */
@@ -174,7 +168,7 @@ const login = asyncHandler(async (req, res) => {
     $or: [{ email: data }, { username: data }],
   });
   if (!isUser) {
-    res.status(404);
+    res.status(401);
     throw new Error("Incorrect username and password");
   }
 
@@ -186,19 +180,14 @@ const login = asyncHandler(async (req, res) => {
   // Make sure email is verified
   if (!isUser.isVerifiedEmail && process.env.NODE_ENV === "production") {
     res.status(400);
-    throw new Error("First verify you email.");
+    throw new Error("Please verify your email to login.");
   }
 
   const isMatched = await comparePass(isUser.password, password);
   if (!isMatched) {
-    res.status(404);
+    res.status(401);
     throw new Error("Incorrect username and password");
   }
-
-  const filteredUser = isUser.toObject();
-  delete filteredUser.__v;
-  delete filteredUser.password;
-  delete filteredUser.upiPin;
 
   // Create and send auth token
   const token = createToken({ userId: isUser._id });
@@ -210,12 +199,12 @@ const login = asyncHandler(async (req, res) => {
   return res.status(200).json({
     message: "User logged in successfully",
     token,
-    user: filteredUser,
+    user: isUser,
   });
 });
 
 /**
- * @route   POST /api/auth/logout
+ * @route   POST /api/clients/auth/logout
  * @desc    Logs the user out by clearing the cookie
  * @access  Privet
  */

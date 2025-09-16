@@ -63,7 +63,7 @@ const getBills = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   PUT /api/bills/update-bill
+ * @route   PUT /api/bills/update-bill?query=
  * @desc    Update specific bill of the logged-in user
  * @access  Privet
  */
@@ -104,7 +104,7 @@ const updateBill = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   DELETE /api/bills/delete-bill
+ * @route   DELETE /api/bills/delete-bill?query=
  * @desc    Delete specific bill of the logged-in user
  * @access  Privet
  */

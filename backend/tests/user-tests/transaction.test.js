@@ -29,13 +29,13 @@ beforeAll(async () => {
 beforeEach(async () => {
   await UserModel.deleteMany();
   await UserModel.create(testUser);
-  const res = await request(app).post("/api/auth/login").send({
+  const res = await request(app).post("/api/clients/auth/login").send({
     data: "example123",
     password: "123456789",
   });
   authToken = res.body.token;
   await request(app)
-    .put("/api/users/update-pin")
+    .put("/api/clients/users/update-pin")
     .send({ newPin: "123456" })
     .set({ authorization: `Bearer ${authToken}` });
 });
@@ -61,7 +61,7 @@ describe("transaction route testing", () => {
     });
 
     const res = await request(app)
-      .post("/api/transactions/user-to-user")
+      .post("/api/clients/transactions/user-to-user")
       .send({
         payee: "example456@alphapay",
         amount: 100,
@@ -91,7 +91,7 @@ describe("transaction route testing", () => {
     });
 
     const res = await request(app)
-      .post("/api/transactions/user-to-bill")
+      .post("/api/clients/transactions/user-to-bill")
       .send({
         id: "testbill@provider",
         method: "wallet",
@@ -121,7 +121,7 @@ describe("transaction route testing", () => {
     });
 
     const res = await request(app)
-      .post("/api/transactions/wallet-recharge")
+      .post("/api/clients/transactions/wallet-recharge")
       .send({
         cardID: card._id,
         amount: 500,
@@ -151,7 +151,9 @@ describe("transaction route testing", () => {
     });
 
     const res = await request(app)
-      .get(`/api/transactions/verify-transaction?query=${transaction._id}`)
+      .get(
+        `/api/clients/transactions/verify-transaction?query=${transaction._id}`
+      )
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(200);
@@ -174,7 +176,7 @@ describe("transaction route testing", () => {
       payee: { name: "Example Test", accountOrPhone: "example123@alphapay" },
     });
     const res = await request(app)
-      .get("/api/transactions/all-transaction")
+      .get("/api/clients/transactions/all-transaction")
       .set({ authorization: `Bearer ${authToken}` });
     expect(res.statusCode).toBe(200);
     expect(res.body.allTransaction[0].amount).toBe(500);
@@ -186,7 +188,7 @@ describe("transaction route testing", () => {
 describe("transaction route edge cases", () => {
   it("should fail user-to-user transaction with invalid payee", async () => {
     const res = await request(app)
-      .post("/api/transactions/user-to-user")
+      .post("/api/clients/transactions/user-to-user")
       .send({
         payee: "nonexistent@alphapay",
         amount: 100,
@@ -212,7 +214,7 @@ describe("transaction route edge cases", () => {
     });
 
     const res = await request(app)
-      .post("/api/transactions/user-to-user")
+      .post("/api/clients/transactions/user-to-user")
       .send({
         payee: "lowbalance@alphapay",
         amount: 2000,
@@ -227,7 +229,7 @@ describe("transaction route edge cases", () => {
 
   it("should fail user-to-bill transaction with invalid bill ID", async () => {
     const res = await request(app)
-      .post("/api/transactions/user-to-bill")
+      .post("/api/clients/transactions/user-to-bill")
       .send({
         id: "wrong@provider",
         method: "wallet",
@@ -243,7 +245,7 @@ describe("transaction route edge cases", () => {
 
   it("should fail wallet recharge with invalid card", async () => {
     const res = await request(app)
-      .post("/api/transactions/wallet-recharge")
+      .post("/api/clients/transactions/wallet-recharge")
       .send({
         cardID: "6123456789abcdef01234567", // random ObjectId
         amount: 500,
@@ -258,7 +260,7 @@ describe("transaction route edge cases", () => {
   it("should fail verify transaction with invalid ID", async () => {
     const res = await request(app)
       .get(
-        `/api/transactions/verify-transaction?query=6123456789abcdef01234567`
+        `/api/clients/transactions/verify-transaction?query=6123456789abcdef01234567`
       )
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -270,7 +272,7 @@ describe("transaction route edge cases", () => {
     // clean up first
     await TransactionModel.deleteMany({});
     const res = await request(app)
-      .get("/api/transactions/all-transaction")
+      .get("/api/clients/transactions/all-transaction")
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(200);
