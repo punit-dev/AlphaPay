@@ -4,7 +4,7 @@ const asyncHandler = require("express-async-handler");
 const checkValidation = require("../../util/checkValidation");
 
 /**
- * @route   POST /api/bills/register-bill
+ * @route   POST /api/clients/bills/register-bill
  * @desc    Registers a new Bill
  * @access  Privet
  */
@@ -22,11 +22,11 @@ const registerBill = asyncHandler(async (req, res) => {
 
   // Check bill exists or not
   const isBillExists = await BillModel.findOne({
-    $and: [{ userId: user._id }, { UId }],
+    $and: [{ userId: user._id }, { UId }, { provider }],
   });
   if (isBillExists) {
     res.status(400);
-    throw new Error("This Bill is already exits.");
+    throw new Error("This Bill already exists.");
   }
 
   //register a new bill
@@ -44,7 +44,7 @@ const registerBill = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   GET /api/bills/get-bills
+ * @route   GET /api/clients/bills/get-bills
  * @desc    Get all bills of the logged-in user
  * @access  Privet
  */
@@ -56,14 +56,14 @@ const getBills = asyncHandler(async (req, res) => {
 
   if (bills.length == 0) {
     res.status(404);
-    throw new Error("bills not available");
+    throw new Error("Bills not available");
   }
 
   return res.status(200).json({ message: "All Bills", bills });
 });
 
 /**
- * @route   PUT /api/bills/update-bill?query=
+ * @route   PUT /api/clients/bills/update-bill?query=
  * @desc    Update specific bill of the logged-in user
  * @access  Privet
  */
@@ -79,12 +79,19 @@ const updateBill = asyncHandler(async (req, res) => {
   const { provider, UId, nickname } = req.body;
   const { query } = req.query;
 
-  const bill = await BillModel.findOne({
-    $and: [{ UId: query }, { userId: user._id }],
-  });
+  const bill = await BillModel.findById(query);
   if (!bill) {
     res.status(404);
     throw new Error("Bill not found.");
+  }
+
+  const isBillSameUId = await BillModel.findOne({
+    $and: [{ UId: UId }, { provider: provider }, { userId: user._id }],
+  });
+
+  if (isBillSameUId && isBillSameUId._id.toString() !== bill._id.toString()) {
+    res.status(400);
+    throw new Error("This Bill already exists.");
   }
 
   //check is updated field are available then change if available
@@ -104,7 +111,7 @@ const updateBill = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   DELETE /api/bills/delete-bill?query=
+ * @route   DELETE /api/clients/bills/delete-bill?query=
  * @desc    Delete specific bill of the logged-in user
  * @access  Privet
  */
@@ -116,11 +123,8 @@ const deleteBill = asyncHandler(async (req, res) => {
     throw isNotValid;
   }
 
-  const user = req.user;
   const { query } = req.query;
-  const bill = await BillModel.findOneAndDelete({
-    $and: [{ UId: query }, { userId: user._id }],
-  });
+  const bill = await BillModel.findByIdAndDelete(query);
 
   if (!bill) {
     res.status(404);

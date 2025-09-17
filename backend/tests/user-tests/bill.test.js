@@ -89,7 +89,7 @@ describe("bill route testing", () => {
   });
   it("should update user bill", async () => {
     const res = await request(app)
-      .put(`/api/clients/bills/update-bill?query=${testBill.UId}`)
+      .put(`/api/clients/bills/update-bill?query=${billID}`)
       .send({
         provider: "VI",
         UId: "8943748522",
@@ -103,7 +103,7 @@ describe("bill route testing", () => {
   });
   it("should delete user bill", async () => {
     const res = await request(app)
-      .delete(`/api/clients/bills/delete-bill?query=${testBill.UId}`)
+      .delete(`/api/clients/bills/delete-bill?query=${billID}`)
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(200);

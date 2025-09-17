@@ -651,3 +651,227 @@
     ```
 
 ## User Bill Management APIs
+
+### Add a New Bill
+
+**Endpoint:** `POST /clients/bills/register-bill`
+**Access:** Private<br>
+**Description:** Add a new bill for the user.
+
+#### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+#### Body Request
+
+| Field      | Type   | Required | Description                |
+| ---------- | ------ | -------- | -------------------------- |
+| `provider` | String | Yes      | Bill provider name         |
+| `UIdType`  | String | Yes      | User ID type (email/phone) |
+| `UId`      | String | Yes      | User ID (email or phone)   |
+| `category` | String | Yes      | Bill category              |
+| `nickname` | String | No       | Nickname for the bill      |
+
+- Success Response:
+
+  - status: `201 Created`
+
+    ```json
+    {
+      "message": "Bill registered successfully",
+      "bill": "new_bill_data_object"
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "User not found"
+    }
+    ```
+  - status: `400 Not Found`
+    ```json
+    {
+      "message": "This Bill already exists."
+    }
+    ```
+
+### Get All Bills
+
+**Endpoint:** `GET /clients/bills/get-bills`
+**Access:** Private<br>
+**Description:** Get all bills of the logged-in user.
+
+#### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+- Success Response:
+
+  - status: `200 OK`
+    ```json
+    {
+      "message": "All Bills",
+      "bills": ["array_of_user_bill_objects"]
+    }
+    ```
+
+- Error Responses:
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "User not found"
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Bills not available."
+    }
+    ```
+
+### Update a Bill
+
+**Endpoint:** `PUT /clients/bills/update-bill`
+**Access:** Private<br>
+**Description:** Update a specific bill of the logged-in user.
+
+#### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+#### Query Request
+
+| Field   | Type   | Required | Description               |
+| ------- | ------ | -------- | ------------------------- |
+| `query` | String | Yes      | ID of the bill to update. |
+
+#### Body Request
+
+| Field      | Type   | Required | Description              |
+| ---------- | ------ | -------- | ------------------------ |
+| `provider` | String | No       | Bill provider name       |
+| `UId`      | String | No       | User ID (email or phone) |
+| `nickname` | String | No       | Nickname for the bill    |
+
+- Success Response:
+
+  - status: `200 OK`
+
+    ```json
+    {
+      "message": "Bill updated successfully",
+      "updatedBill": "updated_bill_data_object"
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "User not found"
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Bill not found."
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "This Bill already exists."
+    }
+    ```
+
+### Delete a Bill
+
+**Endpoint:** `DELETE /clients/bills/delete-bill`
+**Access:** Private<br>
+**Description:** Delete a specific bill of the logged-in user.
+
+#### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+#### Query Request
+
+| Field   | Type   | Required | Description               |
+| ------- | ------ | -------- | ------------------------- |
+| `query` | String | Yes      | ID of the bill to delete. |
+
+- Success Response:
+
+  - status: `200 OK`
+    ```json
+    {
+      "message": "Bill deleted successfully",
+      "billId": "deleted_bill_id"
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "User not found"
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Bill not found."
+    }
+    ```
