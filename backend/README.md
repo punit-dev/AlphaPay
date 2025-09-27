@@ -9,13 +9,13 @@ This document provides a comprehensive guide to the RESTful APIs available in th
 
 ## Index
 
-- [Users APIs](#-users-apis)
-  - [Auth APIs](#-auth-apis)
-  - [User Profile Management APIs](#-user-profile-management-apis)
-  - [User Card Management APIs](#-user-card-management-apis)
-  - [User Bill Management APIs](#-user-bill-management-apis)
-  - [Transactions APIs](#-transactions-apis)
-  - [Notification APIs](#-notification-apis)
+- [Users APIs](#users-apis)
+  - [Auth APIs](#auth-apis)
+  - [User Profile Management APIs](#user-profile-management-apis)
+  - [User Card Management APIs](#user-card-management-apis)
+  - [User Bill Management APIs](#user-bill-management-apis)
+  - [Transactions APIs](#transactions-apis)
+  - [Notification APIs](#notification-apis)
 
 ## Users APIs
 
