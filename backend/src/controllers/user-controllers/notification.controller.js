@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 const checkValidation = require("../../util/checkValidation");
 
 /**
- * @route   GET /api/notifications/get-notifications
+ * @route   GET /api/clients/notifications/get-notifications
  * @desc    Get all notifications of the logged-in user
  * @access  Private
  */
@@ -14,7 +14,7 @@ const getNotifications = asyncHandler(async (req, res) => {
     .sort({
       createdAt: -1,
     })
-    .populate("userId", "username upiId");
+    .limit(20);
 
   if (!notifications) {
     res.status(404);
@@ -25,7 +25,7 @@ const getNotifications = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   PUT /api/notifications/mark-as-read?notificationId=
+ * @route   PUT /api/clients/notifications/mark-as-read?notificationId=
  * @desc    Mark a notification as read
  * @access  Private
  */
@@ -57,7 +57,7 @@ const markAsRead = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   DELETE /api/notifications/delete-notification?notificationId=
+ * @route   DELETE /api/clients/notifications/delete-notification?notificationId=
  * @desc    Delete a notification
  * @access  Private
  */

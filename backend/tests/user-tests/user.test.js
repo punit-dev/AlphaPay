@@ -25,7 +25,7 @@ beforeAll(async () => {
 beforeEach(async () => {
   await UserModel.deleteMany();
   await UserModel.create(testUser);
-  const res = await request(app).post("/api/clients/auth/login").send({
+  const res = await request(app).post("/api/users/auth/login").send({
     data: "example123",
     password: "123456789",
   });
@@ -42,7 +42,7 @@ afterAll(async () => {
 describe("user route testing", () => {
   it("should read user data", async () => {
     const res = await request(app)
-      .get("/api/clients/users/profile")
+      .get("/api/users/profile")
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(200);
@@ -58,7 +58,7 @@ describe("user route testing", () => {
 
   it("should update user data", async () => {
     const res = await request(app)
-      .put("/api/clients/users/update")
+      .put("/api/users/update")
       .send({
         username: "testing123",
         fullname: "Testing User",
@@ -77,7 +77,7 @@ describe("user route testing", () => {
 
   it("should update user login password", async () => {
     const res = await request(app)
-      .put("/api/clients/users/update-pass")
+      .put("/api/users/update-pass")
       .send({
         newPass: "7746231005",
       })
@@ -89,7 +89,7 @@ describe("user route testing", () => {
 
   it("should update user UPI Pin", async () => {
     const res = await request(app)
-      .put("/api/clients/users/update-pin")
+      .put("/api/users/update-pin")
       .send({
         newPin: "774623",
       })
@@ -101,7 +101,7 @@ describe("user route testing", () => {
 
   it("should delete user account", async () => {
     const res = await request(app)
-      .delete("/api/clients/users/delete")
+      .delete("/api/users/delete")
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(200);
@@ -110,7 +110,7 @@ describe("user route testing", () => {
 
   it("should delete user account", async () => {
     const res = await request(app)
-      .get("/api/clients/users/search")
+      .get("/api/users/search")
       .query({ query: "exam" })
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -127,14 +127,14 @@ describe("user route testing", () => {
 describe("user route edge cases testing", () => {
   //user profile edge case
   it("should return 401 when no token is provided", async () => {
-    const res = await request(app).get("/api/clients/users/profile");
+    const res = await request(app).get("/api/users/profile");
     expect(res.statusCode).toBe(401);
   });
 
   //update user edge case
   it("should message 'Must be a valid email' when invalid email is provided", async () => {
     const res = await request(app)
-      .put("/api/clients/users/update")
+      .put("/api/users/update")
       .send({ email: "invalid-email" })
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -145,7 +145,7 @@ describe("user route edge cases testing", () => {
   //update password edge case
   it("should return 400 if newPass is not provided", async () => {
     const res = await request(app)
-      .put("/api/clients/users/update-pass")
+      .put("/api/users/update-pass")
       .send({})
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -157,7 +157,7 @@ describe("user route edge cases testing", () => {
 
   it("should return 400 if newPass is same as old password", async () => {
     const res = await request(app)
-      .put("/api/clients/users/update-pass")
+      .put("/api/users/update-pass")
       .send({ newPass: "123456789" })
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -170,7 +170,7 @@ describe("user route edge cases testing", () => {
   //update UPI pin edge case
   it("should return 400 if newPin is not provided", async () => {
     const res = await request(app)
-      .put("/api/clients/users/update-pin")
+      .put("/api/users/update-pin")
       .send({})
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -183,7 +183,7 @@ describe("user route edge cases testing", () => {
   //search users edge case
   it("should return 400 if query param is missing", async () => {
     const res = await request(app)
-      .get("/api/clients/users/search")
+      .get("/api/users/search")
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(400);
@@ -194,7 +194,7 @@ describe("user route edge cases testing", () => {
 
   it("should return 404 if no user found", async () => {
     const res = await request(app)
-      .get("/api/clients/users/search")
+      .get("/api/users/search")
       .query({ query: "no-match-found" })
       .set({ authorization: `Bearer ${authToken}` });
 

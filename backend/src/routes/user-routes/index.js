@@ -9,7 +9,7 @@ const cardRoute = require("./card.route");
 const notificationRoute = require("./notification.route");
 
 route.use("/auth", authRoute);
-route.use("/users", userRoute);
+route.use("/", userRoute);
 route.use("/transactions", tranRoute);
 route.use("/bills", billRoute);
 route.use("/cards", cardRoute);

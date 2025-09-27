@@ -36,19 +36,19 @@ beforeAll(async () => {
 beforeEach(async () => {
   await UserModel.deleteMany();
   await UserModel.create(testUser);
-  const res = await request(app).post("/api/clients/auth/login").send({
+  const res = await request(app).post("/api/users/auth/login").send({
     data: "example123",
     password: "123456789",
   });
 
   authToken = res.body.token;
   await request(app)
-    .put("/api/clients/users/update-pin")
+    .put("/api/users/update-pin")
     .send({ newPin: "123456" })
     .set({ authorization: `Bearer ${authToken}` });
 
   const resp = await request(app)
-    .post("/api/clients/bills/register-bill")
+    .post("/api/users/bills/register-bill")
     .send(testBill)
     .set({
       authorization: `Bearer ${authToken}`,
@@ -67,7 +67,7 @@ afterAll(async () => {
 describe("bill route testing", () => {
   it("should register a bill", async () => {
     const res = await request(app)
-      .post("/api/clients/bills/register-bill")
+      .post("/api/users/bills/register-bill")
       .send({ ...testBill, UId: "1234567809" })
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -81,7 +81,7 @@ describe("bill route testing", () => {
   });
   it("should get user bills", async () => {
     const res = await request(app)
-      .get("/api/clients/bills/get-bills")
+      .get("/api/users/bills/get-bills")
       .set({ authorization: `Bearer ${authToken}` });
     expect(res.statusCode).toBe(200);
     const bills = res.body.bills;
@@ -89,7 +89,7 @@ describe("bill route testing", () => {
   });
   it("should update user bill", async () => {
     const res = await request(app)
-      .put(`/api/clients/bills/update-bill?query=${billID}`)
+      .put(`/api/users/bills/update-bill?query=${billID}`)
       .send({
         provider: "VI",
         UId: "8943748522",
@@ -103,7 +103,7 @@ describe("bill route testing", () => {
   });
   it("should delete user bill", async () => {
     const res = await request(app)
-      .delete(`/api/clients/bills/delete-bill?query=${billID}`)
+      .delete(`/api/users/bills/delete-bill?query=${billID}`)
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(200);
@@ -116,7 +116,7 @@ describe("bill route edge case testing", () => {
   //register bill edge case
   it("should reject bill registration with missing fields", async () => {
     const res = await request(app)
-      .post("/api/clients/bills/register-bill")
+      .post("/api/users/bills/register-bill")
       .send({})
       .set({ authorization: `Bearer ${authToken}` });
 
@@ -127,7 +127,7 @@ describe("bill route edge case testing", () => {
   });
   it("should reject bill registration with required authorization token", async () => {
     const res = await request(app)
-      .post("/api/clients/bills/register-bill")
+      .post("/api/users/bills/register-bill")
       .send({ ...testBill, UId: "1234567809" });
     expect(res.statusCode).toBe(401);
     expect(res.body.message).toMatch("Token is required");
@@ -135,7 +135,7 @@ describe("bill route edge case testing", () => {
 
   //get bill edge case
   it("should reject request with required authorization token", async () => {
-    const res = await request(app).get("/api/clients/bills/get-bills");
+    const res = await request(app).get("/api/users/bills/get-bills");
 
     expect(res.statusCode).toBe(401);
     expect(res.body.message).toBe("Token is required");
@@ -144,7 +144,7 @@ describe("bill route edge case testing", () => {
   //update bill edge case
   it("should reject update user bill with required UId query", async () => {
     const res = await request(app)
-      .put(`/api/clients/bills/update-bill?query=`)
+      .put(`/api/users/bills/update-bill?query=`)
       .send({
         provider: "VI",
         UId: "8943748522",
@@ -156,7 +156,7 @@ describe("bill route edge case testing", () => {
   });
   it("should reject update user bill with required authorization token", async () => {
     const res = await request(app)
-      .put(`/api/clients/bills/update-bill?query=${testBill.UId}`)
+      .put(`/api/users/bills/update-bill?query=${testBill.UId}`)
       .send({
         provider: "VI",
         UId: "8943748522",
@@ -169,7 +169,7 @@ describe("bill route edge case testing", () => {
   //delete bill edge case
   it("should reject to delete bill with missing field", async () => {
     const res = await request(app)
-      .delete(`/api/clients/bills/delete-bill?query=`)
+      .delete(`/api/users/bills/delete-bill?query=`)
       .set({ authorization: `Bearer ${authToken}` });
 
     expect(res.statusCode).toBe(400);
@@ -177,7 +177,7 @@ describe("bill route edge case testing", () => {
   });
   it("should reject to delete card with required authorization token", async () => {
     const res = await request(app).delete(
-      `/api/clients/bills/delete-bill?query=${testBill.UId}`
+      `/api/users/bills/delete-bill?query=${testBill.UId}`
     );
 
     expect(res.statusCode).toBe(401);

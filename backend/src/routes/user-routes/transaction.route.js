@@ -5,29 +5,24 @@ const authMiddleware = require("../../middleware/user-middleware/authMiddleware"
 const TranController = require("../../controllers/user-controllers/transaction.controller");
 const tranValidator = require("../../middleware/user-middleware/transactionValidator");
 
+route.use(authMiddleware);
+
 route.post(
   "/user-to-user",
   tranValidator.userToUserValidator,
-  authMiddleware,
-  TranController.newUserToUserTransaction
+  TranController.userToUserTransaction
 );
 route.post(
   "/user-to-bill",
   tranValidator.userToBillValidator,
-  authMiddleware,
-  TranController.newUserToBillTransaction
+  TranController.userToBillTransaction
 );
 route.post(
   "/wallet-recharge",
   tranValidator.walletRechargeValidator,
-  authMiddleware,
   TranController.walletRecharge
 );
-route.get(
-  "/verify-transaction",
-  authMiddleware,
-  TranController.verifyTransaction
-);
-route.get("/all-transaction", authMiddleware, TranController.getTransaction);
+route.get("/verify-transaction", TranController.verifyTransaction);
+route.get("/all-transaction", TranController.getTransaction);
 
 module.exports = route;

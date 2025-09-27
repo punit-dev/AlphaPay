@@ -10,11 +10,11 @@ const checkValidation = require("../../util/checkValidation");
 const { sendData } = require("../../util/sockets");
 
 /**
- * @route   POST /api/transactions/user-to-user
+ * @route   POST /api/clients/transactions/user-to-user
  * @desc    Transfer money from one user to another
  * @access  Private
  */
-const newUserToUserTransaction = asyncHandler(async (req, res) => {
+const userToUserTransaction = asyncHandler(async (req, res) => {
   // Validate request
   const isNotValid = checkValidation(req);
 
@@ -159,11 +159,11 @@ const newUserToUserTransaction = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   POST /api/transactions/user-to-bill
+ * @route   POST /api/clients/transactions/user-to-bill
  * @desc    Pay a bill using wallet or card
  * @access  Private
  */
-const newUserToBillTransaction = asyncHandler(async (req, res) => {
+const userToBillTransaction = asyncHandler(async (req, res) => {
   const isNotValid = checkValidation(req);
 
   if (isNotValid) {
@@ -286,7 +286,7 @@ const newUserToBillTransaction = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   POST /api/transactions/wallet-recharge
+ * @route   POST /api/clients/transactions/wallet-recharge
  * @desc    Recharge wallet using card
  * @access  Private
  */
@@ -393,7 +393,7 @@ const walletRecharge = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   GET /api/transactions/verify-transaction?query=transactionId
+ * @route   GET /api/clients/transactions/verify-transaction?query=transactionId
  * @desc    Verify a transaction by ID
  * @access  Private
  */
@@ -419,7 +419,7 @@ const verifyTransaction = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   GET /api/transactions/all-transaction
+ * @route   GET /api/clients/transactions/all-transaction
  * @desc    Get all transactions of the logged-in user
  * @access  Private
  */
@@ -439,12 +439,12 @@ const getTransaction = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json({ message: "Transaction History", allTransaction: allTran });
+    .json({ message: "Transaction History", allTransactions: allTran });
 });
 
 module.exports = {
-  newUserToUserTransaction,
-  newUserToBillTransaction,
+  userToUserTransaction,
+  userToBillTransaction,
   walletRecharge,
   verifyTransaction,
   getTransaction,
