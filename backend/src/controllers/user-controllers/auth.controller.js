@@ -62,7 +62,7 @@ const register = asyncHandler(async (req, res) => {
     message: "User created successfully",
     user: newUser,
     authToken,
-    otp: `${process.env.NODE_ENV === "test" && otp}`,
+    otp: otp,
   });
 
   // Send OTP to user's email
