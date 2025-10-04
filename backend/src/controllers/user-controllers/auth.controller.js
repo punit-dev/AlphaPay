@@ -49,6 +49,7 @@ const register = asyncHandler(async (req, res) => {
     dateOfBirth,
     walletBalance,
     otpToken: token,
+    otp: otp,
   });
 
   // Create auth token after registration
@@ -146,7 +147,7 @@ const resendOTP = asyncHandler(async (req, res) => {
   await user.save();
   return res.status(200).json({
     message: "OTP sent successfully",
-    otp: `${process.env.NODE_ENV === "test" && otp}`,
+    otp: otp,
   });
 });
 
