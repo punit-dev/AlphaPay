@@ -140,7 +140,9 @@ const resendOTP = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  await mailer.sendOTP(email, otp);
+  if (process.env.NODE_ENV !== "production") {
+    await mailer.sendOTP(email, otp);
+  }
 
   // Save the new OTP token in DB
   user.otpToken = token;
