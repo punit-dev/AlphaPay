@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "npx nodemon --exec node --require dotenv/config index.js"
+    "start": "node index.js",
+    "dev": "npx nodemon --exec node --require dotenv/config index.js"
   },
   "keywords": [],
   "author": "Punit Poddar",

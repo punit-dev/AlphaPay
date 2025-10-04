@@ -7,7 +7,7 @@ const { initializeSocket } = require("./src/util/sockets");
 
 const server = createServer(app);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 const mongoUri =
   process.env.NODE_ENV === "production"
@@ -20,7 +20,13 @@ initializeSocket(server);
 //connect database then run server
 connectDB(mongoUri).then(() => {
   server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(
+      `Server is running on port ${PORT} ${
+        process.env.RENDER_EXTERNAL_URL
+          ? `at ${process.env.RENDER_EXTERNAL_URL}`
+          : ""
+      }`
+    );
   });
 });
 
