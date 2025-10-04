@@ -52,6 +52,10 @@ const register = asyncHandler(async (req, res) => {
     otp: otp,
   });
 
+  if (process.env.NODE_ENV !== "production") {
+    await mailer.sendOTP(email, otp);
+  }
+
   // Create auth token after registration
   const authToken = createToken({ userId: newUser._id });
   res.cookie("token", authToken, {
@@ -63,11 +67,6 @@ const register = asyncHandler(async (req, res) => {
     user: newUser,
     authToken,
     otp: otp,
-  });
-
-  // Send OTP to user's email
-  await mailer.sendOTP(newUser.email, otp).catch((err) => {
-    console.error("Failed to send OTP:", err);
   });
 });
 
