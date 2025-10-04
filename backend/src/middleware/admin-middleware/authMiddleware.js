@@ -6,7 +6,7 @@ const adminAuthMiddleware = asyncHandler(async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1] || req.cookies.token;
   if (!token) {
     res.status(401);
-    throw new Error("Token is required");
+    throw new Error("Token is required.");
   }
 
   let verify;
@@ -17,13 +17,13 @@ const adminAuthMiddleware = asyncHandler(async (req, res, next) => {
     throw new Error("Token invalid.");
   }
 
-  const user = await AdminUserModel.findById(verify.userId);
-  if (!user) {
+  const admin = await AdminUserModel.findById(verify.userId);
+  if (!admin) {
     res.status(404);
-    throw new Error("Invalid token user.");
+    throw new Error("Admin not found");
   }
 
-  req.user = user;
+  req.admin = admin;
   next();
 });
 

@@ -16,12 +16,6 @@ route.get(
 route.get("/profile", userController.profile);
 
 route.put(
-  "/update",
-  userValidator.validateUpdateProfile,
-  userController.updateProfile
-);
-
-route.put(
   "/update-role",
   checkRole("superAdmin"),
   userValidator.validateUpdateRole,

@@ -8,7 +8,7 @@ const validation = require("../../util/checkValidation");
 const moment = require("moment");
 
 /**
- * @route GET /api/admin/clients?blocked=&gtWallet=&ltWallet=&lastActive=&limit=
+ * @route GET /api/admin/users?blocked=&gtWallet=&ltWallet=&lastActive=&limit=&page=
  * @desc Get all users with filters
  * @access Admin, SuperAdmin
  */
@@ -54,6 +54,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
   const total = await UserModel.countDocuments(filter);
 
   res.status(200).json({
+    message: "Users List",
     users,
     pagination: {
       total,
@@ -66,7 +67,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route GET /api/admin/clients/transactions?userId=&limit=&status=&method=&gta=&lta=
+ * @route GET /api/admin/users/transactions?userId=&limit=&status=&method=&gta=&lta=
  * @desc Get user by ID with transaction filters
  * @access Admin, SuperAdmin
  */
@@ -118,6 +119,7 @@ const getUserByIdWithTransactions = asyncHandler(async (req, res) => {
     throw new Error("Transactions not found for this user");
   }
   res.status(200).json({
+    message: "User transactions",
     user,
     transactions,
     txnsPagination: {
@@ -131,7 +133,7 @@ const getUserByIdWithTransactions = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route PUT /api/admin/clients/block?userId=
+ * @route PUT /api/admin/users/block?userId=
  * @desc Block a user
  * @access Admin, SuperAdmin
  */
@@ -151,13 +153,11 @@ const blockUser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  return res
-    .status(200)
-    .json({ message: "User blocked Successfully", updatedUser: user });
+  return res.status(200).json({ message: "User blocked Successfully", user });
 });
 
 /**
- * @route PUT /api/admin/clients/unblock?userId=
+ * @route PUT /api/admin/users/unblock?userId=
  * @desc Unblock a user
  * @access Admin, SuperAdmin
  */
@@ -177,13 +177,11 @@ const unblockUser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  return res
-    .status(200)
-    .json({ message: "User blocked Successfully", updatedUser: user });
+  return res.status(200).json({ message: "User unblocked Successfully", user });
 });
 
 /**
- * @route DELETE /api/admin/clients/delete-user?userId=
+ * @route DELETE /api/admin/users/delete?userId=
  * @desc Delete a user and all associated data
  * @access Admin, SuperAdmin
  */

@@ -64,7 +64,7 @@ const transactionHistory = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json({
-    message: "All Wallet transaction history",
+    message: "Transactions List",
     transactions,
     pagination: {
       total,
@@ -88,7 +88,26 @@ const refund = asyncHandler(async (req, res) => {
     throw isNotValid;
   }
 
-  const { userId, fund } = req.body;
+  const { userId, transactionId, reason } = req.body;
+
+  const transaction = await TransactionModel.findById(transactionId);
+  if (!transaction) {
+    res.status(404);
+    throw new Error("Transaction not found");
+  }
+
+  if (transaction.payee.userRef.toString() !== userId) {
+    res.status(400);
+    throw new Error("This transaction does not belong to the specified user");
+  }
+  if (transaction.status !== "SUCCESS") {
+    res.status(400);
+    throw new Error("Only successful transactions can be refunded");
+  }
+  if (transaction.category === "REFUND") {
+    res.status(400);
+    throw new Error("Refund transaction cannot be refunded again");
+  }
 
   const user = await UserModel.findById(userId);
 
@@ -97,12 +116,17 @@ const refund = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  user.walletBalance += fund;
+  if (!reason || reason.trim().split(" ").length < 5) {
+    res.status(400);
+    throw new Error("Please provide a valid reason (at least 5 words)");
+  }
+
+  user.walletBalance += transaction.amount;
   await user.save();
 
-  const transaction = await TransactionModel.create({
+  const refundTransaction = await TransactionModel.create({
     initiatedBy: "ADMIN",
-    amount: fund,
+    amount: transaction.amount,
     category: "REFUND",
     payee: {
       name: user.fullname,
@@ -112,26 +136,28 @@ const refund = asyncHandler(async (req, res) => {
       transactionType: "CREDIT",
     },
     status: "SUCCESS",
+    message: reason,
   });
 
   const notify = await NotificationModel.create({
     userId: user._id,
     action: "credit",
     balance: user.walletBalance,
-    data: transaction,
+    data: refundTransaction,
     type: "transaction",
-    message: `You refunded ₹${fund} to your wallet`,
+    message: `₹${refundTransaction.amount} was refunded to your wallet`,
   });
 
   sendData(user.socketId, "tran", notify);
 
   return res.status(200).json({
-    message: "refund successfully",
+    message: "Transaction refunded successfully",
+    transaction: refundTransaction,
   });
 });
 
 /**
- * @route PUT /api/admin/transactions/deduct-fund
+ * @route PUT /api/admin/transactions/deduct
  * @desc Deduct fund from user wallet
  * @access Admin, SuperAdmin
  */
@@ -142,13 +168,28 @@ const deductFund = asyncHandler(async (req, res) => {
     throw isNotValid;
   }
 
-  const { userId, fund } = req.body;
+  const { userId, fund, reason } = req.body;
 
   const user = await UserModel.findById(userId);
 
   if (!user) {
     res.status(404);
     throw new Error("User not found");
+  }
+
+  if (user.walletBalance <= 0) {
+    res.status(400);
+    throw new Error("User has insufficient balance");
+  }
+
+  if (fund <= 0) {
+    res.status(400);
+    throw new Error("Deduction amount must be greater than zero");
+  }
+
+  if (!reason || reason.trim().split(" ").length < 5) {
+    res.status(400);
+    throw new Error("Please provide a valid reason (at least 5 words)");
   }
 
   const actualDeduct = Math.min(fund, user.walletBalance);
@@ -167,6 +208,7 @@ const deductFund = asyncHandler(async (req, res) => {
       transactionType: "DEBIT",
     },
     status: "SUCCESS",
+    message: reason,
   });
 
   const notify = await NotificationModel.create({
@@ -182,8 +224,7 @@ const deductFund = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     message: "Fund deducted successfully",
-    deductedAmount: actualDeduct,
-    newBalance: user.walletBalance,
+    transaction,
   });
 });
 

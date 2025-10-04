@@ -34,7 +34,7 @@ route.put(
 );
 
 route.delete(
-  "/delete-user",
+  "/delete",
   userManagementValidator.validateBlockUnblockDeleteUser,
   userManagementController.deleteUser
 );

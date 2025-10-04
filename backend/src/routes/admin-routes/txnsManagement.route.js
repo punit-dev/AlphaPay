@@ -22,7 +22,7 @@ route.put(
 );
 
 route.put(
-  "/deduct-fund",
+  "/deduct",
   txnsManagementValidator.validateFund,
   txnsManagementController.deductFund
 );

@@ -5,8 +5,8 @@ const validation = require("../../util/checkValidation");
 const { comparePass } = require("../../util/hash");
 
 /**
- * @route GET /api/admin/users?page=&limit=&email=&searchTerm=
- * @desc Get all users
+ * @route GET /api/admin?page=&limit=&email=&searchTerm=
+ * @desc Get all admins
  * @access Private (superAdmin)
  */
 const getUsers = asyncHandler(async (req, res) => {
@@ -28,16 +28,17 @@ const getUsers = asyncHandler(async (req, res) => {
     filter.role = role;
   }
 
-  const skip = ((parseInt(page) || 1) - 1) * limit;
+  const skip = ((parseInt(page) || 1) - 1) * (parseInt(limit) || 10);
 
-  const users = await AdminUserModel.find(filter)
+  const admins = await AdminUserModel.find(filter)
     .skip(skip)
     .limit(parseInt(limit) || 10)
     .sort({ createdAt: -1 });
   const total = await AdminUserModel.countDocuments(filter);
 
   return res.status(200).json({
-    users,
+    message: "Admin Users List",
+    admins: admins,
     pagination: {
       total,
       page: parseInt(page) || 1,
@@ -49,46 +50,20 @@ const getUsers = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route GET /api/admin/users/profile
- * @desc Get user profile
+ * @route GET /api/admin/profile
+ * @desc Get admin profile
  * @access Private
  */
 const profile = asyncHandler(async (req, res) => {
-  const user = req.user;
+  const admin = req.admin;
   return res
     .status(200)
-    .json({ message: "User profile retrieved successfully", user });
+    .json({ message: "Admin profile retrieved successfully", admin });
 });
 
 /**
- * @route PUT /api/admin/users/update
- * @desc Update user profile
- * @access Private
- */
-const updateProfile = asyncHandler(async (req, res) => {
-  const isNotValid = validation(req);
-  if (isNotValid) {
-    res.status(400);
-    throw isNotValid;
-  }
-
-  const user = req.user;
-  const { fullname, email } = req.body;
-
-  const updatedUser = await AdminUserModel.findByIdAndUpdate(
-    user._id,
-    { fullname, email },
-    { new: true }
-  );
-
-  return res
-    .status(200)
-    .json({ message: "User profile updated successfully", user: updatedUser });
-});
-
-/**
- * @route PUT /api/admin/users/update-role
- * @desc Update user role
+ * @route PUT /api/admin/update-role
+ * @desc Update admin role
  * @access Private (superAdmin)
  */
 const updateRole = asyncHandler(async (req, res) => {
@@ -98,62 +73,85 @@ const updateRole = asyncHandler(async (req, res) => {
     throw isNotValid;
   }
 
-  const { userId, role } = req.body;
+  const { adminId, role } = req.body;
 
-  const updatedUser = await AdminUserModel.findByIdAndUpdate(
-    userId,
+  if (req.admin._id == adminId) {
+    res.status(400);
+    throw new Error("You cannot change your own role");
+  }
+
+  const updatedAdmin = await AdminUserModel.findByIdAndUpdate(
+    adminId,
     { role },
     { new: true }
   );
 
+  if (!updatedAdmin) {
+    res.status(404);
+    throw new Error("Admin not found");
+  }
+
   return res
     .status(200)
-    .json({ message: "User role updated successfully", user: updatedUser });
+    .json({ message: "Admin role updated successfully", admin: updatedAdmin });
 });
 
 /**
- * @route PUT /api/admin/users/update-password
- * @desc Update user password
+ * @route PUT /api/admin/update-password
+ * @desc Update admin password
  * @access Private
  */
 const updatePass = asyncHandler(async (req, res) => {
-  const user = req.user;
+  const admin = req.admin;
 
   const { currentPwd, newPwd } = req.body;
 
-  const isMatch = await comparePass(user.password, currentPwd);
+  const isMatch = await comparePass(admin.password, currentPwd);
   if (!isMatch) {
     res.status(400);
     throw new Error("Current password is incorrect");
   }
 
-  user.password = newPwd;
-  await user.save();
+  if (currentPwd === newPwd) {
+    res.status(400);
+    throw new Error(
+      "New password must be different from the current password."
+    );
+  }
+
+  admin.password = newPwd;
+  await admin.save();
 
   return res.status(200).json({ message: "Password updated successfully" });
 });
 
 /**
- * @route DELETE /api/admin/users/delete?userId=
- * @desc Delete user
+ * @route DELETE /api/admin/delete?adminId=
+ * @desc Delete admin
  * @access Private (superAdmin)
  */
 const deleteUser = asyncHandler(async (req, res) => {
-  const { userId } = req.query;
+  const { adminId } = req.query;
 
-  const deletedUser = await AdminUserModel.findByIdAndDelete(userId);
-  if (!deletedUser) {
-    res.status(404);
-    throw new Error("User not found");
+  if (req.admin._id == adminId) {
+    res.status(400);
+    throw new Error("You cannot delete your own account");
   }
 
-  return res.status(200).json({ message: "User deleted successfully" });
+  const deletedUser = await AdminUserModel.findByIdAndDelete(adminId);
+  if (!deletedUser) {
+    res.status(404);
+    throw new Error("Admin not found");
+  }
+
+  return res
+    .status(200)
+    .json({ message: "Admin user deleted successfully", admin: deletedUser });
 });
 
 module.exports = {
   getUsers,
   profile,
-  updateProfile,
   updateRole,
   updatePass,
   deleteUser,

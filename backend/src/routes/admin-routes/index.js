@@ -8,9 +8,9 @@ const txnsManagementRoute = require("./txnsManagement.route");
 const dashboardRoute = require("./dashboard.route");
 
 route.use("/auth", authRoute);
-route.use("/users", userRoute);
+route.use("/", userRoute);
 route.use("/transactions", txnsManagementRoute);
-route.use("/clients", userManagementRoute);
+route.use("/users", userManagementRoute);
 route.use("/dashboard", dashboardRoute);
 
 module.exports = route;

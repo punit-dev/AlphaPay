@@ -7,7 +7,7 @@ const { comparePass } = require("../../util/hash");
 
 /**
  * @route POST /api/admin/auth/register
- * @desc Register a new user
+ * @desc Register a new admin
  * @access Private (superAdmin)
  */
 const register = asyncHandler(async (req, res) => {
@@ -20,13 +20,13 @@ const register = asyncHandler(async (req, res) => {
 
   const { fullname, email, password, role } = req.body;
 
-  const isUserExists = await AdminUserModel.findOne({ email });
-  if (isUserExists) {
+  const isAdminExists = await AdminUserModel.findOne({ email });
+  if (isAdminExists) {
     res.status(400);
-    throw new Error("User already exists");
+    throw new Error("Email already in use.");
   }
 
-  const newUser = await AdminUserModel.create({
+  const newAdmin = await AdminUserModel.create({
     fullname,
     email,
     password,
@@ -34,14 +34,14 @@ const register = asyncHandler(async (req, res) => {
   });
 
   res.status(201).json({
-    message: "User registered successfully",
-    user: newUser,
+    message: "Admin registered successfully",
+    admin: newAdmin,
   });
 });
 
 /**
  * @route POST /api/admin/auth/login
- * @desc Login a user
+ * @desc Login a admin
  * @access Public
  */
 const login = asyncHandler(async (req, res) => {
@@ -53,41 +53,41 @@ const login = asyncHandler(async (req, res) => {
 
   const { email, password } = req.body;
 
-  const user = await AdminUserModel.findOne({ email });
-  if (!user) {
-    res.status(404);
-    throw new Error("User not found");
+  const admin = await AdminUserModel.findOne({ email });
+  if (!admin) {
+    res.status(401);
+    throw new Error("Incorrect email and password");
   }
 
-  const isMatched = await comparePass(user.password, password);
+  const isMatched = await comparePass(admin.password, password);
   if (!isMatched) {
     res.status(401);
     throw new Error("Incorrect email and password");
   }
 
-  const token = createToken({ userId: user._id }, "7d");
+  const token = createToken({ userId: admin._id }, "7d");
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   });
 
-  user.lastLogin = Date.now();
-  await user.save();
+  admin.lastLogin = Date.now();
+  await admin.save();
 
   res.status(200).json({
-    message: "User logged in successfully",
-    user: {
-      id: user._id,
-      fullname: user.fullname,
-      email: user.email,
-      role: user.role,
+    message: "Login successfully",
+    admin: {
+      id: admin._id,
+      fullname: admin.fullname,
+      email: admin.email,
+      role: admin.role,
     },
   });
 });
 
 /**
  * @route POST /api/admin/auth/logout
- * @desc Logout a user
+ * @desc Logout a admin
  * @access Private
  */
 const logout = asyncHandler(async (req, res) => {
@@ -95,7 +95,7 @@ const logout = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   });
-  res.status(200).json({ message: "User logged out successfully" });
+  res.status(200).json({ message: "Logout successfully" });
 });
 
 module.exports = {

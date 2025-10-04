@@ -5,7 +5,7 @@ This document provides a comprehensive guide to the RESTful APIs available in th
 ## Base URLs
 
 **_Base URL for Users in local environment_**: http://localhost:3000/api/users<br>
-**_Base URL for Admins in local environment_**: http://localhost:3000/api/admins
+**_Base URL for Admins in local environment_**: http://localhost:3000/api/admin
 
 ## Index
 
@@ -16,6 +16,12 @@ This document provides a comprehensive guide to the RESTful APIs available in th
   - [User Bill Management APIs](#user-bill-management-apis)
   - [Transactions APIs](#transactions-apis)
   - [Notification APIs](#notification-apis)
+- [Admin APIs](#admin-apis)
+  - [Admin Auth APIs](#admin-auth-apis)
+  - [Admin Profile Management APIs](#admin-profile-management-apis)
+  - [Dashboard APIs](#dashboard-apis)
+  - [User Management APIs](#user-management-apis)
+  - [Transaction Management APIs](#transaction-management-apis)
 
 ## Users APIs
 
@@ -1388,5 +1394,1039 @@ This document provides a comprehensive guide to the RESTful APIs available in th
     ```json
     {
       "message": "Notification not found"
+    }
+    ```
+
+## Admin APIs
+
+### Admin Auth APIs
+
+#### Admin Register
+
+**Endpoint:** `POST /auth/register`  
+**Access:** Super Admin<br>
+**Description:** Register a new admin user.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Body Request
+
+| Field      | Type   | Required | Description                                |
+| ---------- | ------ | -------- | ------------------------------------------ |
+| `fullname` | String | Yes      | Full nama of the admin user.               |
+| `email`    | String | Yes      | Unique email address of the admin user.    |
+| `password` | String | Yes      | Password for the admin user account.       |
+| `role`     | String | Yes      | Role of the admin user (admin/superAdmin). |
+
+- Success Response:
+
+  - status: `201 Created`
+
+    ```json
+    {
+      "message": "Admin registered successfully",
+      "admin": "new_admin_user_data_object"
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token is required."
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Email already in use."
+    }
+    ```
+
+#### Admin Login
+
+**Endpoint:** `POST /auth/login`
+**Access:** Public<br>
+**Description:** Login for admin users.
+
+##### Body Request
+
+| Field      | Type   | Required | Description                          |
+| ---------- | ------ | -------- | ------------------------------------ |
+| `email`    | String | Yes      | Email address of the admin user.     |
+| `password` | String | Yes      | Password for the admin user account. |
+
+- Success Response:
+  - status: `200 OK`
+  ```json
+  {
+    "message": "Login successfully",
+    "admin": {
+      "id": "<admin_id>",
+      "fullname": "<admin_fullname>",
+      "email": "<admin_email>",
+      "role": "<admin_role>"
+    }
+  }
+  ```
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Bad Request`
+    ```json
+    {
+      "message": "Incorrect email and password"
+    }
+    ```
+
+#### Admin Logout
+
+**Endpoint:** `POST /auth/logout`  
+**Access:** Private<br>
+**Description:** Logout the admin user.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+- Success Response:
+  - status: `200 OK`
+  ```json
+  {
+    "message": "Logout successfully"
+  }
+  ```
+- Error Responses:
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+
+### Admin Profile Management APIs
+
+#### Get Admin Users List
+
+**Endpoint:** `GET /`  
+**Access:** Super Admin<br>
+**Description:** Get a list of admin users with optional filters.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Query Parameters
+
+| Field        | Type   | Required | Description                              |
+| ------------ | ------ | -------- | ---------------------------------------- |
+| `page`       | Number | No       | Page number for pagination (default: 1). |
+| `limit`      | Number | No       | Number of users per page (default: 10).  |
+| `email`      | String | No       | Filter by admin email address.           |
+| `searchTerm` | String | No       | Search term for admin fullname or email. |
+
+- Success Response:
+
+  - status: `200 OK`
+    ```json
+    {
+      "message": "Admin Users List",
+      "admins": ["array_of_admin_user_objects"],
+      "pagination": {
+        "total": "total_number_of_admins",
+        "page": "current_page_number",
+        "pages": "total_number_of_pages",
+        "next": "next_page_number_or_null",
+        "prev": "previous_page_number_or_null"
+      }
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+
+#### Admin Profile
+
+**Endpoint:** `GET /profile`
+**Access:** Private<br>
+**Description:** Get the profile of the logged-in admin user.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+- Success Response:
+  - status: `200 OK`
+  ```json
+  {
+    "message": "Admin Profile",
+    "admin": "admin_user_data_object"
+  }
+  ```
+- Error Responses:
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+
+#### Update Admin Role
+
+**Endpoint:** `PUT /update-role`  
+**Access:** Super Admin<br>
+**Description:** Update the role of an admin user.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Body Request
+
+| Field     | Type   | Required | Description                     |
+| --------- | ------ | -------- | ------------------------------- |
+| `role`    | String | Yes      | New role for the admin user.    |
+| `adminId` | String | Yes      | ID of the admin user to update. |
+
+- Success Response:
+
+  - status: `200 OK`
+
+    ```json
+    {
+      "message": "Admin role updated successfully",
+      "admin": "updated_admin_user_data_object"
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Cannot change your own role."
+    }
+    ```
+
+#### Update Admin Password
+
+**Endpoint:** `PUT /update-password`  
+**Access:** Private<br>
+**Description:** Update the password of the logged-in admin user.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Body Request
+
+| Field        | Type   | Required | Description                         |
+| ------------ | ------ | -------- | ----------------------------------- |
+| `currentPwd` | String | Yes      | Current password of the admin user. |
+| `newPwd`     | String | Yes      | New password for the admin user.    |
+
+- Success Response:
+
+  - status: `200 OK`
+
+    ```json
+    {
+      "message": "Password updated successfully"
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Current password is incorrect."
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "New password must be different from the current password."
+    }
+    ```
+
+#### Delete Admin User
+
+**Endpoint:** `DELETE /delete?adminId=<adminId>`  
+**Access:** Super Admin<br>
+**Description:** Delete a specific admin user.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Query Request
+
+| Field     | Type   | Required | Description                     |
+| --------- | ------ | -------- | ------------------------------- |
+| `adminId` | String | Yes      | ID of the admin user to delete. |
+
+- Success Response:
+
+  - status: `200 OK`
+    ```json
+    {
+      "message": "Admin user deleted successfully",
+      "admin": "deleted_admin_user_data_object"
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Cannot delete your own account."
+    }
+    ```
+
+### Dashboard APIs
+
+#### Get Dashboard Statistics
+
+**Endpoint:** `GET /dashboard`
+**Access:** Private<br>
+**Description:** Get key statistics for the admin dashboard.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+- Success Response:
+  - status: `200 OK`
+    ```json
+    {
+      "message": "Dashboard Statistics",
+      "statistics": {
+        "totalUsers": "total_number_of_users",
+        "activeUsers": "number_of_active_users",
+        "totalTransactions": "number_of_transactions",
+        "successTransactions": "number_of_successful_transactions",
+        "failedTransactions": "number_of_failed_transactions",
+        "refundTransactions": "number_of_refunded_transactions",
+        "deductionTransaction": "number_of_deduction_transactions",
+        "totalRevenue": "total_revenue_generated",
+        "avgTransactionValue": "average_transaction_value",
+        "transactionSuccessRatio": "transaction_success_ratio",
+        "topUsers": "top_users_data"
+      }
+    }
+    ```
+- Error Responses:
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+
+### User Management APIs
+
+#### Get All Users
+
+**Endpoint:** `GET /users`
+**Access:** Admin, SuperAdmin<br>
+**Description:** Get a list of all users with optional filters.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Query Parameters
+
+| Field        | Type    | Required | Description                                               |
+| ------------ | ------- | -------- | --------------------------------------------------------- |
+| `blocked`    | Boolean | No       | Filter users by blocked status.                           |
+| `gtWallet`   | Number  | No       | Filter users with wallet balance greater than this value. |
+| `ltWallet`   | Number  | No       | Filter users with wallet balance less than this value.    |
+| `lastActive` | Number  | No       | Filter users by last active days.                         |
+| `limit`      | Number  | No       | Number of users to return (default: 50).                  |
+| `page`       | Number  | No       | Page number for pagination (default: 1).                  |
+
+- Success Response:
+
+  - status: `200 OK`
+    ```json
+    {
+      "message": "Users List",
+      "users": ["array_of_user_objects"],
+      "pagination": {
+        "total": "total_number_of_users",
+        "page": "current_page_number",
+        "pages": "total_number_of_pages",
+        "next": "next_page_number_or_null",
+        "prev": "previous_page_number_or_null"
+      }
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+
+#### Get User by ID with transactions
+
+**Endpoint:** `GET /users/transactions`
+**Access:** Admin, SuperAdmin<br>
+**Description:** Get a user by ID along with their transactions, with optional filters.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Query Parameters
+
+| Field    | Type   | Required | Description                                               |
+| -------- | ------ | -------- | --------------------------------------------------------- |
+| `userId` | String | Yes      | ID of the user to retrieve transactions for.              |
+| `limit`  | Number | No       | Number of transactions to return (default: 50).           |
+| `status` | String | No       | Filter transactions by status (e.g., pending, completed). |
+| `method` | String | No       | Filter transactions by payment method (e.g., card, bank). |
+| `gta`    | Number | No       | Filter transactions with amount greater than this value.  |
+| `lta`    | Number | No       | Filter transactions with amount less than this value.     |
+
+- Success Response:
+
+  - status: `200 OK`
+    ```json
+    {
+      "message": "User transactions",
+      "user": "user_object",
+      "transactions": ["array_of_transaction_objects"],
+      "txnsPagination": {
+        "total": "total_number_of_transactions",
+        "page": "current_page_number",
+        "pages": "total_number_of_pages",
+        "next": "next_page_number_or_null",
+        "prev": "previous_page_number_or_null"
+      }
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "User not found"
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+
+#### Block User
+
+**Endpoint:** `PUT /users/block`
+**Access:** Admin, SuperAdmin<br>
+**Description:** Block a specific user.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Query Parameters
+
+| Field    | Type   | Required | Description              |
+| -------- | ------ | -------- | ------------------------ |
+| `userId` | String | Yes      | ID of the user to block. |
+
+- Success Response:
+  - status: `200 OK`
+    ```json
+    {
+      "message": "User blocked Successfully",
+      "user": "updated_user_data_object"
+    }
+    ```
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "User not found"
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+
+#### Unblock User
+
+**Endpoint:** `PUT /users/unblock`
+**Access:** Admin, SuperAdmin<br>
+**Description:** Unblock a specific user.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Query Parameters
+
+| Field    | Type   | Required | Description              |
+| -------- | ------ | -------- | ------------------------ |
+| `userId` | String | Yes      | ID of the user to block. |
+
+- Success Response:
+  - status: `200 OK`
+    ```json
+    {
+      "message": "User unblocked Successfully",
+      "user": "updated_user_data_object"
+    }
+    ```
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "User not found"
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+
+#### Delete User
+
+**Endpoint:** `DELETE /users/delete`
+**Access:** Admin, SuperAdmin<br>
+**Description:** Delete a specific user.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Query Parameters
+
+| Field    | Type   | Required | Description               |
+| -------- | ------ | -------- | ------------------------- |
+| `userId` | String | Yes      | ID of the user to delete. |
+
+- Success Response:
+  - status: `200 OK`
+    ```json
+    {
+      "message": "User delete successfully",
+      "userId": "deleted_user_id"
+    }
+    ```
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "User not found"
+    }
+    ```
+    - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+
+### Transaction Management APIs
+
+#### Get All Transactions
+
+**Endpoint:** `GET /transactions?userId=&transactionId=&days=&status=&method=&gta=&lta=&page=&limit=`
+**Access:** Admin, SuperAdmin<br>
+**Description:** Get a list of all transactions with optional filters.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Query Parameters
+
+| Field           | Type   | Required | Description                                                     |
+| --------------- | ------ | -------- | --------------------------------------------------------------- |
+| `userId`        | String | No       | Filter transactions by user ID.                                 |
+| `transactionId` | String | No       | Filter transactions by transaction ID.                          |
+| `days`          | Number | No       | Filter transactions from the last 'n' days.                     |
+| `status`        | String | No       | Filter transactions by status (e.g., SUCCESS, FAILED, PENDING). |
+| `method`        | String | No       | Filter transactions by payment method (e.g., card, wallet).     |
+| `gta`           | Number | No       | Filter transactions with amount greater than this value.        |
+| `lta`           | Number | No       | Filter transactions with amount less than this value.           |
+| `limit`         | Number | No       | Number of transactions to return (default: 50).                 |
+| `page`          | Number | No       | Page number for pagination (default: 1).                        |
+
+- Success Response:
+
+  - status: `200 OK`
+    ```json
+    {
+      "message": "Transactions List",
+      "transactions": ["array_of_transaction_objects"],
+      "pagination": {
+        "total": "total_number_of_transactions",
+        "page": "current_page_number",
+        "pages": "total_number_of_pages",
+        "next": "next_page_number_or_null",
+        "prev": "previous_page_number_or_null"
+      }
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+
+#### Refund Transaction
+
+**Endpoint:** `PUT /transactions/refund`
+**Access:** Admin, SuperAdmin<br>
+**Description:** Refund a specific transaction.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Body Request
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `userId`        | String | Yes      | ID of the user to refund.        |
+| `transactionId` | String | Yes      | ID of the transaction to refund. |
+| `reason`        | String | Yes      | Reason for the refund.           |
+
+- Success Response:
+
+  - status: `200 OK`
+    ```json
+    {
+      "message": "Transaction refunded successfully",
+      "transaction": "refunded_transaction_data_object"
+    }
+    ```
+
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "User not found"
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Transaction not found"
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Only successful transactions can be refunded."
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "This transaction does not belong to the specified user"
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Refund transaction cannot be refunded again"
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Please provide a valid reason (at least 5 words)"
+    }
+    ```
+
+#### Deduct Amount from User Wallet
+
+**Endpoint:** `PUT /transactions/deduct`
+**Access:** Admin, SuperAdmin<br>
+**Description:** Deduct a specific amount from a user's wallet.
+
+##### Headers
+
+| Field           | Type   | Required | Description                      |
+| --------------- | ------ | -------- | -------------------------------- |
+| `authorization` | String | Yes      | Bearer token for authentication. |
+
+##### Body Request
+
+| Field    | Type   | Required | Description                              |
+| -------- | ------ | -------- | ---------------------------------------- |
+| `userId` | String | Yes      | ID of the user to deduct from.           |
+| `fund`   | Number | Yes      | Amount to deduct from the user's wallet. |
+| `reason` | String | Yes      | Reason for the deduction.                |
+
+- Success Response:
+  - status: `200 OK`
+    ```json
+    {
+      "message": "Amount deducted successfully from user wallet",
+      "transaction": "deduction_transaction_data_object"
+    }
+    ```
+- Error Responses:
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Validation Error Message"
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "User not found"
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "User has insufficient balance"
+    }
+    ```
+  - status: `401 Unauthorized`
+    ```json
+    {
+      "message": "Token invalid."
+    }
+    ```
+  - status: `403 Forbidden`
+    ```json
+    {
+      "message": "Access denied."
+    }
+    ```
+  - status: `404 Not Found`
+    ```json
+    {
+      "message": "Admin not found"
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Deduction amount must be greater than zero."
+    }
+    ```
+  - status: `400 Bad Request`
+    ```json
+    {
+      "message": "Please provide a valid reason (at least 5 words)"
     }
     ```

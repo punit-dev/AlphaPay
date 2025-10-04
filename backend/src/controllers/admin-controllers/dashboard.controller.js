@@ -3,6 +3,12 @@ const TransactionModel = require("../../models/user-models/transactionModel");
 
 const asyncHandler = require("express-async-handler");
 
+/**
+ * @route GET /api/admin/dashboard
+ * @desc Get dashboard statistics
+ * @access Private
+ */
+
 const dashboardStatus = asyncHandler(async (req, res) => {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
@@ -82,17 +88,20 @@ const dashboardStatus = asyncHandler(async (req, res) => {
     : 0;
 
   res.json({
-    totalUsers,
-    activeUsers,
-    totalTransactions,
-    successTransactions,
-    failedTransactions,
-    refundTransactions,
-    deductionTransaction,
-    totalRevenue,
-    avgTransactionValue,
-    transactionSuccessRatio: transactionSuccessRatio + "%",
-    topUsers,
+    message: "Dashboard Statistics",
+    statistics: {
+      totalUsers,
+      activeUsers,
+      totalTransactions,
+      successTransactions,
+      failedTransactions,
+      refundTransactions,
+      deductionTransaction,
+      totalRevenue,
+      avgTransactionValue,
+      transactionSuccessRatio: transactionSuccessRatio + "%",
+      topUsers,
+    },
   });
 });
 
