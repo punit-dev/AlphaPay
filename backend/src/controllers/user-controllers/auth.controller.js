@@ -65,7 +65,9 @@ const register = asyncHandler(async (req, res) => {
   });
 
   // Send OTP to user's email
-  await mailer.sendOTP(newUser.email, otp);
+  await mailer.sendOTP(newUser.email, otp).catch((err) => {
+    console.error("Failed to send OTP:", err);
+  });
 });
 
 /**
