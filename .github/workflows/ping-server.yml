@@ -1,0 +1,12 @@
+name: Ping Render Server Every 15 Minutes
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send HTTP request to Render server
+        run: curl -s https://alphapay.onrender.com/health

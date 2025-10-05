@@ -80,6 +80,12 @@ app.use(
   adminRoute
 );
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", message: "Server is healthy" });
+});
+
+// Error handling middleware
+
 app.use(errorHandler);
 
 module.exports = app;
