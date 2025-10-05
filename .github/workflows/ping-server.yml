@@ -1,4 +1,4 @@
-name: Ping Render Server Every 15 Minutes
+name: Ping Render Server Every 10 Minutes
 
 on:
   schedule:
