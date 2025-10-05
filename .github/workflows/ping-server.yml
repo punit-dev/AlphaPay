@@ -3,6 +3,7 @@ name: Ping Render Server Every 15 Minutes
 on:
   schedule:
     - cron: "*/15 * * * *"
+  workflow_dispatch:
 
 jobs:
   ping:
