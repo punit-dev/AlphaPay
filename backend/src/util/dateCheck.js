@@ -9,7 +9,7 @@
  * 2. Parse expiry month and year from the given date string.
  * 3. Convert expiry year to full format (e.g., "25" -> 2025).
  * 4. If expiry year is less than current year → expired.
- * 5. If expiry year is the same but expiry month is <= current month → expired.
+ * 5. If expiry year is the same but expiry month is < current month → expired.
  * 6. Otherwise → not expired.
  */
 const isDateCurrent = (date) => {
@@ -20,14 +20,16 @@ const isDateCurrent = (date) => {
 
   const [expiryMonth, expiryYear] = date.split("/").map(Number);
 
-  const givenYear = 2000 + parseInt(expiryYear, 10);
-  const givenMonth = parseInt(expiryMonth, 10);
-  const isYearExpired = givenYear < todayYear;
-  if (isYearExpired) {
+  const givenYear = 2000 + expiryYear;
+  const givenMonth = expiryMonth;
+
+  if (givenYear < todayYear) {
     return isYearExpired;
   }
-  const isDateExpired = givenMonth <= todayMonth;
-  return isDateExpired;
+
+  if (givenYear === todayYear && givenMonth < todayMonth) return true;
+  return false;
+ 
 };
 
 module.exports = isDateCurrent;
