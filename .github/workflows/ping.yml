@@ -1,14 +1,13 @@
-name: Keep AlphaPay Server Awake (6AM–12AM)
+name: Ping Render Server Every 13 Minutes
 
 on:
   schedule:
-    - cron: "*/13 * * * *"   # Run every 13 minutes
-  workflow_dispatch:          # Allow manual run too
+    - cron: "*/13 * * * *"
+  workflow_dispatch:
 
 jobs:
-  ping_server:
+  ping:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check current UTC time
         id: time
@@ -16,11 +15,8 @@ jobs:
 
       - name: Skip if between 12AM–6AM (IST)
         if: ${{ (fromJSON(steps.time.outputs.hour) + 5) % 24 >= 0 && (fromJSON(steps.time.outputs.hour) + 5) % 24 < 6 }}
-        run: echo "Sleeping hours (12AM–6AM IST) — skipping ping."
+        run: echo "⏸️ Sleeping hours (12AM–6AM IST) — skipping ping."
 
-      - name: Ping AlphaPay Server
+      - name: Send HTTP request to Render server
         if: ${{ !((fromJSON(steps.time.outputs.hour) + 5) % 24 >= 0 && (fromJSON(steps.time.outputs.hour) + 5) % 24 < 6) }}
-        run: |
-          echo "Pinging AlphaPay server..."
-          curl -s --max-time 10 https://alphapay.onrender.com/health > /dev/null
-          echo "Ping complete."
+        run: curl -s --max-time 10 https://alphapay.onrender.com/health
