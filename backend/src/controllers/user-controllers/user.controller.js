@@ -59,7 +59,9 @@ const updateUser = asyncHandler(async (req, res) => {
     const otp = generateOTP(6);
     const token = createToken({ otp }, "10m");
     user.otpToken = token;
-    await mailer(email, otp);
+    if (process.env.NODE_ENV !== "production") {
+      await mailer.sendOTP(email, otp);
+    }
   }
   if (dateOfBirth) user.dateOfBirth = dateOfBirth;
   if (phoneNumber && phoneNumber != user.phoneNumber) {
@@ -68,7 +70,7 @@ const updateUser = asyncHandler(async (req, res) => {
   }
   await user.save();
 
-  return res.status(200).json({ message: "User Updated", user });
+  return res.status(200).json({ message: "User Updated", user, otp: otp });
 });
 
 /**
@@ -137,7 +139,7 @@ const deleteUser = asyncHandler(async (req, res) => {
   await Promise.all([
     user.deleteOne(),
     TransactionModel.deleteMany({
-      $or: [{ payee: user._id }, { payer: user._id }],
+      $or: [{ "payee.userRef": user._id }, { "payer.userRef": user._id }],
     }),
     CardModel.deleteMany({
       userId: user._id,
