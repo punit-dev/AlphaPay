@@ -1,58 +1,138 @@
 package com.example.frontend.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+// ------------------
+// EXTENDED COLOR DATA
+// ------------------
+data class ExtendedColors(
+        val textPrimary: Color,
+        val textSecondary: Color,
+        val textTertiary: Color,
+        val divider: Color,
+        val success: Color,
+        val warning: Color,
+        val error: Color,
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
-)
-
-@Composable
-fun FrontendTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
-) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
+val LocalExtendedColors = staticCompositionLocalOf {
+    ExtendedColors(
+            textPrimary = Color.Unspecified,
+            textSecondary = Color.Unspecified,
+            textTertiary = Color.Unspecified,
+            divider = Color.Unspecified,
+            success = Color.Unspecified,
+            warning = Color.Unspecified,
+            error = Color.Unspecified
     )
+}
+
+// ------------------
+// DARK THEME COLORS
+// ------------------
+private val DarkColorScheme =
+        darkColorScheme(
+                primary = BlueBolt,
+                onPrimary = White,
+                primaryContainer = TrueBlue,
+                onPrimaryContainer = White,
+                secondary = Lavender,
+                onSecondary = White,
+                secondaryContainer = CyberGrape,
+                onSecondaryContainer = White,
+                background = DarkJungleGreen,
+                onBackground = White,
+                surface = CharlestonGreen,
+                onSurface = White,
+                surfaceVariant = DarkGunmetal,
+                onSurfaceVariant = CadetBlue,
+                error = TartOrange,
+                onError = White,
+                outline = Crayola,
+        )
+
+private val DarkExtendedColors =
+        ExtendedColors(
+                textPrimary = White,
+                textSecondary = CadetBlue,
+                textTertiary = SlateGray,
+                divider = DarkGunmetal,
+                success = MediumSpringGreen,
+                warning = ChineseYellow,
+                error = TartOrange
+        )
+
+// ------------------
+// LIGHT THEME COLORS
+// ------------------
+private val LightColorScheme =
+        lightColorScheme(
+                primary = TrueBlue,
+                onPrimary = White,
+                primaryContainer = MayaBlue,
+                onPrimaryContainer = ChineseBlack,
+                secondary = PaleViolet,
+                onSecondary = ChineseBlack,
+                secondaryContainer = Lavender,
+                onSecondaryContainer = ChineseBlack,
+                background = White,
+                onBackground = ChineseBlack,
+                surface = Color(0xFFF5F7FA), // soft neutral light surface
+                onSurface = ChineseBlack,
+                surfaceVariant = Color(0xFFE7EAF0),
+                onSurfaceVariant = SlateGray,
+                error = TartOrange,
+                onError = White,
+                outline = Crayola
+        )
+
+private val LightExtendedColors =
+        ExtendedColors(
+                textPrimary = ChineseBlack,
+                textSecondary = SlateGray,
+                textTertiary = CadetBlue,
+                divider = Color(0xFFE7EAF0),
+                success = MediumSpringGreen,
+                warning = ChineseYellow,
+                error = TartOrange
+        )
+
+// ------------------
+// THEME WRAPPER
+// ------------------
+@Composable
+fun AlphaPayTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val extendedColors = if (darkTheme) DarkExtendedColors else LightExtendedColors
+
+    CompositionLocalProvider(LocalExtendedColors provides extendedColors) {
+        MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
+    }
+}
+
+// ------------------
+// ACCESS EXTENDED COLORS
+// ------------------
+object AlphaPayColors {
+    val textPrimary: Color
+        @Composable get() = LocalExtendedColors.current.textPrimary
+    val textSecondary: Color
+        @Composable get() = LocalExtendedColors.current.textSecondary
+    val textTertiary: Color
+        @Composable get() = LocalExtendedColors.current.textTertiary
+    val divider: Color
+        @Composable get() = LocalExtendedColors.current.divider
+    val success: Color
+        @Composable get() = LocalExtendedColors.current.success
+    val warning: Color
+        @Composable get() = LocalExtendedColors.current.warning
+    val error: Color
+        @Composable get() = LocalExtendedColors.current.error
 }
